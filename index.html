@@ -1,13 +1,13 @@
 <!--
   Life Mosaic
   Created by Vishen
-
+ 
   Copyright (c) 2026 Vishen
   All Rights Reserved.
-
+ 
   Unauthorized redistribution, modification, resale,
   or commercial use is prohibited without permission.
-
+ 
   NOTE ON "AUTHOR MODE" BELOW:
   This file includes a client-side password check that toggles an
   "Author Mode" UI state. Because this is a static HTML/JS file with
@@ -90,7 +90,7 @@
   ::-webkit-scrollbar-track { background: var(--bg2); }
   ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
-
+ 
   /* ==================== LAYOUT ==================== */
   #app { display: flex; height: 100vh; }
   #sidebar {
@@ -196,7 +196,7 @@
   }
   .topbar-actions { display: flex; gap: 8px; align-items: center; }
   .page-content { padding: 28px; flex: 1; max-width: 1400px; }
-
+ 
   /* ==================== PAGE FOOTER ==================== */
   .app-footer {
     padding: 18px 28px 28px;
@@ -207,7 +207,7 @@
     margin-top: 8px;
   }
   .app-footer strong { color: var(--text2); font-weight: 600; }
-
+ 
   /* ==================== BUTTONS ==================== */
   .btn {
     display: inline-flex; align-items: center; gap: 6px;
@@ -231,7 +231,7 @@
   .btn-icon { padding: 7px; border-radius: var(--radius); border: none; background: var(--bg3); color: var(--text2); font-size: 14px; transition: all var(--transition); }
   .btn-icon:hover { background: var(--bg4); color: var(--text); }
   .btn:disabled, .btn-icon:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
-
+ 
   /* ==================== CARDS ==================== */
   .card {
     background: var(--bg2);
@@ -244,7 +244,7 @@
   .card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; }
   .stat-val { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: var(--text); }
   .stat-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
-
+ 
   /* ==================== GRID LAYOUTS ==================== */
   .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
   .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
@@ -254,7 +254,7 @@
   .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
   .section-title { font-size: 15px; font-weight: 600; color: var(--text); }
   .section-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
-
+ 
   /* ==================== HEATMAP ==================== */
   .heatmap-wrap { overflow-x: auto; padding-bottom: 4px; }
   .heatmap-grid {
@@ -273,7 +273,7 @@
   .hc:hover { transform: scale(1.3); z-index: 10; }
   .hc-empty { background: var(--bg3); }
   .heatmap-legend { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11px; color: var(--text3); }
-
+ 
   /* ==================== MODAL ==================== */
   .modal-overlay {
     position: fixed; inset: 0;
@@ -312,7 +312,7 @@
     transition: all var(--transition);
   }
   .close-btn:hover { background: var(--bg4); color: var(--text); }
-
+ 
   /* ==================== CHECKIN ==================== */
   .checkin-dim {
     display: flex; align-items: center; gap: 12px;
@@ -334,7 +334,7 @@
   .star-btn:hover { border-color: var(--accent); background: rgba(108,142,247,0.1); color: var(--accent); }
   .star-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
   .checkin-note { width: 100%; margin-top: 8px; }
-
+ 
   /* ==================== FORMS ==================== */
   .form-group { margin-bottom: 16px; }
   .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
@@ -351,7 +351,7 @@
   .form-row > * { flex: 1; }
   .form-hint { font-size: 11.5px; color: var(--text3); margin-top: 6px; }
   .form-error { font-size: 12px; color: var(--danger); margin-top: 6px; min-height: 16px; }
-
+ 
   /* ==================== BADGES & CHIPS ==================== */
   .badge {
     display: inline-flex; align-items: center; gap: 4px;
@@ -362,11 +362,11 @@
   .badge-success { background: rgba(52,211,153,0.15); color: var(--accent3); }
   .badge-warn { background: rgba(245,158,11,0.15); color: var(--accent4); }
   .badge-danger { background: rgba(244,63,94,0.15); color: var(--danger); }
-
+ 
   /* ==================== PROGRESS ==================== */
   .progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
   .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
-
+ 
   /* ==================== TOOLTIP ==================== */
   .tooltip { position: relative; }
   .tooltip-content {
@@ -378,7 +378,7 @@
     box-shadow: var(--shadow);
   }
   .tooltip:hover .tooltip-content { opacity: 1; }
-
+ 
   /* ==================== TABS ==================== */
   .tabs { display: flex; gap: 2px; background: var(--bg3); padding: 3px; border-radius: var(--radius); border: 1px solid var(--border); }
   .tab {
@@ -389,11 +389,11 @@
   }
   .tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
   .tab:hover:not(.active) { color: var(--text); }
-
+ 
   /* ==================== RATING DISPLAY ==================== */
   .rating-dots { display: flex; gap: 3px; align-items: center; }
   .rating-dot { width: 8px; height: 8px; border-radius: 50%; }
-
+ 
   /* ==================== DNA GRID ==================== */
   .dna-grid { display: flex; flex-wrap: wrap; gap: 3px; }
   .dna-cell {
@@ -404,7 +404,7 @@
     position: relative;
   }
   .dna-cell:hover { transform: scale(1.4); z-index: 5; }
-
+ 
   /* ==================== CALENDAR ==================== */
   .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
   .cal-day-header { text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); padding: 6px 0; }
@@ -420,7 +420,7 @@
   .cal-day.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
   .cal-day.other-month { opacity: 0.35; }
   .cal-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 2px; }
-
+ 
   /* ==================== SEARCH ==================== */
   .search-input-wrap { position: relative; }
   .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; }
@@ -429,13 +429,13 @@
   .search-result:hover { background: var(--bg3); }
   .search-result-date { font-size: 11px; color: var(--text3); }
   .search-result-text { font-size: 13px; color: var(--text); margin-top: 2px; }
-
+ 
   /* ==================== ANALYTICS ==================== */
   .analytics-row { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
   .analytics-row:last-child { border-bottom: none; }
   .analytics-label { flex: 1; font-size: 13px; color: var(--text); }
   .analytics-val { font-size: 13px; font-weight: 600; color: var(--accent); }
-
+ 
   /* ==================== BAR CHART ==================== */
   .bar-chart { display: flex; flex-direction: column; gap: 10px; }
   .bar-row { display: flex; align-items: center; gap: 10px; }
@@ -443,7 +443,7 @@
   .bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
   .bar-fill { height: 100%; border-radius: 4px; }
   .bar-val { font-size: 12px; font-weight: 600; color: var(--text2); width: 30px; text-align: right; }
-
+ 
   /* ==================== DIMENSION SETTINGS ==================== */
   .dim-item {
     display: flex; align-items: center; gap: 10px;
@@ -458,7 +458,7 @@
   .dim-info { flex: 1; }
   .dim-info-name { font-size: 13px; font-weight: 500; }
   .dim-item-actions { display: flex; gap: 4px; }
-
+ 
   /* ==================== NOTIFICATION ==================== */
   .toast {
     position: fixed; bottom: 24px; right: 24px;
@@ -470,11 +470,11 @@
     transition: all 0.3s; max-width: 300px;
   }
   .toast.show { transform: translateY(0); opacity: 1; }
-
+ 
   /* ==================== SCORE RING ==================== */
   .score-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
   .score-ring svg { overflow: visible; }
-
+ 
   /* ==================== PILL NAV (mobile-like year select) ==================== */
   .pill-nav { display: flex; gap: 6px; flex-wrap: wrap; }
   .pill {
@@ -486,7 +486,7 @@
   }
   .pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
   .pill:hover:not(.active) { border-color: var(--border2); color: var(--text); }
-
+ 
   /* ==================== ICON PICKER ==================== */
   .icon-grid { display: flex; flex-wrap: wrap; gap: 6px; }
   .icon-option {
@@ -497,7 +497,7 @@
     cursor: pointer; transition: all var(--transition);
   }
   .icon-option:hover, .icon-option.selected { border-color: var(--accent); background: rgba(108,142,247,0.12); }
-
+ 
   /* ==================== COLOR PICKER ==================== */
   .color-grid { display: flex; flex-wrap: wrap; gap: 6px; }
   .color-option {
@@ -507,23 +507,23 @@
   }
   .color-option:hover { transform: scale(1.15); }
   .color-option.selected { border-color: var(--text); transform: scale(1.1); }
-
+ 
   /* ==================== LOADING ==================== */
   .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
   .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
   .empty-title { font-size: 15px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
   .empty-desc { font-size: 13px; }
-
+ 
   /* ==================== CHECKIN PROGRESS ==================== */
   .checkin-progress { display: flex; gap: 4px; margin-bottom: 4px; }
   .checkin-progress-dot { height: 3px; flex: 1; border-radius: 2px; background: var(--bg3); transition: background 0.2s; }
   .checkin-progress-dot.done { background: var(--accent); }
-
+ 
   /* ==================== MONTH VIEW ==================== */
   .month-selector { display: flex; align-items: center; gap: 12px; }
   .month-nav { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--transition); }
   .month-nav:hover { background: var(--bg4); color: var(--text); }
-
+ 
   /* ==================== DETAIL PANEL ==================== */
   .detail-panel {
     position: fixed; right: 0; top: 0; bottom: 0;
@@ -538,14 +538,14 @@
   .detail-panel-body { flex: 1; overflow-y: auto; padding: 20px; }
   .detail-rating-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
   .detail-rating-row:last-child { border-bottom: none; }
-
+ 
   /* ==================== TRANSITIONS ==================== */
   .view { display: none; }
   .view.active { display: block; }
-
+ 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
   .fade-in { animation: fadeIn 0.3s ease forwards; }
-
+ 
   /* ==================== IMPORT/EXPORT ==================== */
   .import-zone {
     border: 2px dashed var(--border2);
@@ -555,11 +555,11 @@
     color: var(--text3);
   }
   .import-zone:hover, .import-zone.drag { border-color: var(--accent); background: rgba(108,142,247,0.05); color: var(--text2); }
-
+ 
   /* ==================== MINI CHART ==================== */
   .sparkline { display: flex; align-items: flex-end; gap: 2px; height: 32px; }
   .spark-bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; transition: height 0.3s; }
-
+ 
   /* ==================== RESPONSIVE ==================== */
   @media (max-width: 1100px) {
     .grid-4 { grid-template-columns: repeat(2, 1fr); }
@@ -575,7 +575,7 @@
 </style>
 </head>
 <body class="theme-dark">
-
+ 
 <div id="app">
   <!-- SIDEBAR -->
   <nav id="sidebar">
@@ -629,7 +629,7 @@
       <button class="collapse-btn" id="collapseBtn" title="Toggle sidebar">◀</button>
     </div>
   </nav>
-
+ 
   <!-- MAIN -->
   <main id="main">
     <div class="topbar">
@@ -643,9 +643,9 @@
         <button class="btn btn-primary btn-sm" id="checkinBtn">✍️ Check In</button>
       </div>
     </div>
-
+ 
     <div class="page-content">
-
+ 
       <!-- DASHBOARD VIEW -->
       <div class="view active" id="view-dashboard">
         <div class="section fade-in">
@@ -683,7 +683,7 @@
           </div>
         </div>
       </div>
-
+ 
       <!-- HEATMAPS VIEW -->
       <div class="view" id="view-heatmaps">
         <div class="section-header section">
@@ -692,7 +692,7 @@
         </div>
         <div id="heatmapsContainer"></div>
       </div>
-
+ 
       <!-- DNA VIEW -->
       <div class="view" id="view-dna">
         <div class="section">
@@ -709,7 +709,7 @@
           </div>
         </div>
       </div>
-
+ 
       <!-- CALENDAR VIEW -->
       <div class="view" id="view-calendar">
         <div class="section">
@@ -735,7 +735,7 @@
           </div>
         </div>
       </div>
-
+ 
       <!-- ANALYTICS VIEW -->
       <div class="view" id="view-analytics">
         <div class="grid-2" style="margin-bottom:20px;" id="analyticsTop"></div>
@@ -750,7 +750,7 @@
           <div class="grid-2" id="topBottomDays"></div>
         </div>
       </div>
-
+ 
       <!-- REPORTS VIEW -->
       <div class="view" id="view-reports">
         <div class="section">
@@ -772,7 +772,7 @@
           <div id="yearReport"></div>
         </div>
       </div>
-
+ 
       <!-- SEARCH VIEW -->
       <div class="view" id="view-search">
         <div class="section">
@@ -783,7 +783,7 @@
           <div id="searchResults"></div>
         </div>
       </div>
-
+ 
       <!-- SETTINGS VIEW -->
       <div class="view" id="view-settings">
         <div class="card" id="viewerNotice" style="display:none;margin-bottom:20px;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.06);">
@@ -841,15 +841,15 @@
           </div>
         </div>
       </div>
-
+ 
     </div><!-- page-content -->
-
+ 
     <div class="app-footer">
       <strong>Life Mosaic</strong> © 2026 Created by <strong>Vishen</strong> · All Rights Reserved
     </div>
   </main>
 </div><!-- #app -->
-
+ 
 <!-- DETAIL PANEL -->
 <div class="detail-panel" id="detailPanel">
   <div class="detail-panel-header">
@@ -864,7 +864,7 @@
   </div>
   <div class="detail-panel-body" id="detailBody"></div>
 </div>
-
+ 
 <!-- CHECK IN MODAL -->
 <div class="modal-overlay" id="checkinOverlay">
   <div class="modal">
@@ -882,7 +882,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- ADD/EDIT DIMENSION MODAL -->
 <div class="modal-overlay" id="dimModalOverlay">
   <div class="modal">
@@ -910,7 +910,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- EDIT DAY MODAL -->
 <div class="modal-overlay" id="editDayOverlay">
   <div class="modal modal-lg">
@@ -919,13 +919,16 @@
       <button class="close-btn" id="closeEditDay">✕</button>
     </div>
     <div class="modal-body" id="editDayBody"></div>
-    <div class="modal-footer">
-      <button class="btn btn-secondary" id="cancelEditDay">Cancel</button>
-      <button class="btn btn-primary" id="saveEditDay">Save</button>
+    <div class="modal-footer" style="justify-content:space-between;">
+      <button class="btn btn-danger" id="deleteEntryBtn">🗑️ Delete This Entry</button>
+      <div style="display:flex;gap:8px;">
+        <button class="btn btn-secondary" id="cancelEditDay">Cancel</button>
+        <button class="btn btn-primary" id="saveEditDay">Save</button>
+      </div>
     </div>
   </div>
 </div>
-
+ 
 <!-- IMPORT MODAL -->
 <div class="modal-overlay" id="importOverlay">
   <div class="modal">
@@ -952,7 +955,7 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- AUTHOR LOGIN MODAL -->
 <div class="modal-overlay" id="authorLoginOverlay">
   <div class="modal modal-sm">
@@ -967,7 +970,7 @@
         <div class="form-error" id="authorLoginError"></div>
       </div>
       <div class="form-hint">
-        This unlocks editing for dimensions, day entries, and data import/export on this device. It's a light client-side lock meant to stop casual edits 
+        This unlocks editing for dimensions, day entries, and data import/export on this device. It's a light client-side lock meant to stop casual edits — not a secure login system.
       </div>
     </div>
     <div class="modal-footer">
@@ -976,63 +979,63 @@
     </div>
   </div>
 </div>
-
+ 
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
-
+ 
 <script>
 // ==================== AUTHOR SYSTEM ====================
 // See the file header comment for an honest note on what this protects
 // (casual edits) and what it does NOT protect (a motivated attacker
 // can read AUTHOR_PASSWORD directly from this source file).
 const AUTHOR_NAME = "Vishen";
-const AUTHOR_PASSWORD = "Vishen@01"; // <-- change this before you publish the file
+const AUTHOR_PASSWORD = "your-secret-password"; // <-- change this before you publish the file
 let AUTHOR_MODE = false;
-
+ 
 function isAuthor() { return AUTHOR_MODE === true; }
-
+ 
 function requireAuthor(actionLabel) {
   if (isAuthor()) return true;
   toast(`🔒 Editing restricted to the author${actionLabel ? ' — ' + actionLabel : ''}.`);
   return false;
 }
-
+ 
 function tryAuthorLogin(password) {
   if (password === AUTHOR_PASSWORD) {
     AUTHOR_MODE = true;
-    try { localStorage.setItem('lifemosaic_author', 'true'); } catch(e) {}
+    try { localStorage.setItem('lifemosaic_v2_author', 'true'); } catch(e) {}
     updateAuthorUI();
     toast('👑 Author Mode enabled');
     return true;
   }
   return false;
 }
-
+ 
 function authorLogout() {
   AUTHOR_MODE = false;
-  try { localStorage.removeItem('lifemosaic_author'); } catch(e) {}
+  try { localStorage.removeItem('lifemosaic_v2_author'); } catch(e) {}
   updateAuthorUI();
   toast('Signed out of Author Mode');
 }
-
+ 
 function restoreAuthorSession() {
   try {
-    if (localStorage.getItem('lifemosaic_author') === 'true') AUTHOR_MODE = true;
+    if (localStorage.getItem('lifemosaic_v2_author') === 'true') AUTHOR_MODE = true;
   } catch(e) {}
   updateAuthorUI();
 }
-
+ 
 function updateAuthorUI() {
   const authorBadge = document.getElementById('authorModeBadge');
   const viewerBadge = document.getElementById('viewerModeBadge');
   const viewerNotice = document.getElementById('viewerNotice');
   const dataOnlyTag = document.getElementById('dataAuthorOnlyTag');
-
+ 
   if (authorBadge) authorBadge.style.display = isAuthor() ? 'inline-flex' : 'none';
   if (viewerBadge) viewerBadge.style.display = isAuthor() ? 'none' : 'inline-flex';
   if (viewerNotice) viewerNotice.style.display = isAuthor() ? 'none' : 'block';
   if (dataOnlyTag) dataOnlyTag.style.display = isAuthor() ? 'none' : 'inline-flex';
-
+ 
   // Lock / unlock structural controls. Day check-ins stay open to everyone
   // (it's a personal reflection tool), but structural edits are author-only.
   const lockIds = ['addDimBtn','importBtn','clearDataBtn'];
@@ -1042,10 +1045,10 @@ function updateAuthorUI() {
   });
   const exportBtn = document.getElementById('exportBtn');
   if (exportBtn) exportBtn.disabled = false; // exporting your own view is always allowed
-
+ 
   renderDimList();
 }
-
+ 
 function openAuthorLogin() {
   const overlay = document.getElementById('authorLoginOverlay');
   const input = document.getElementById('authorPasswordInput');
@@ -1055,7 +1058,7 @@ function openAuthorLogin() {
   overlay.classList.add('open');
   setTimeout(() => input && input.focus(), 50);
 }
-
+ 
 // ==================== CONSTANTS ====================
 const ICONS = ['💻','📚','🏃','❤️','😴','📱','🎨','💰','🤝','🧘','🍎','✍️','🎵','🌿','🎯','🔬','🏋️','🎮','🌍','☀️','🌙','🔥','💡','📷','🎭','🧠','🚀','⚡','🏠','🐾'];
 const COLORS = ['#6c8ef7','#a78bfa','#34d399','#f59e0b','#f43f5e','#06b6d4','#ec4899','#84cc16','#fb923c','#8b5cf6','#14b8a6','#ef4444','#3b82f6','#22c55e','#eab308','#e879f9','#f97316','#0ea5e9'];
@@ -1080,7 +1083,7 @@ const PALETTES = {
 const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
 const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 const DAYS_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
-
+ 
 // ==================== STATE ====================
 let state = {
   entries: {},    // { 'YYYY-MM-DD': { ratings: {dimId: 1-5}, note: '' } }
@@ -1106,14 +1109,14 @@ let state = {
   editDayDate: null,
   editDayData: {},
 };
-
+ 
 // ==================== STORAGE ====================
 function save() {
   try {
-    localStorage.setItem('lifemosaic_entries', JSON.stringify(state.entries));
-    localStorage.setItem('lifemosaic_dims', JSON.stringify(state.dimensions));
-    localStorage.setItem('lifemosaic_settings', JSON.stringify(state.settings));
-    localStorage.setItem('lifemosaic_ui_prefs', JSON.stringify({
+    localStorage.setItem('lifemosaic_v2_entries', JSON.stringify(state.entries));
+    localStorage.setItem('lifemosaic_v2_dims', JSON.stringify(state.dimensions));
+    localStorage.setItem('lifemosaic_v2_settings', JSON.stringify(state.settings));
+    localStorage.setItem('lifemosaic_v2_ui_prefs', JSON.stringify({
       theme: state.settings.theme,
       palette: state.settings.palette,
       sidebarCollapsed: state.ui.sidebarCollapsed
@@ -1122,10 +1125,10 @@ function save() {
 }
 function load() {
   try {
-    const entries = localStorage.getItem('lifemosaic_entries');
-    const dims = localStorage.getItem('lifemosaic_dims');
-    const settings = localStorage.getItem('lifemosaic_settings');
-    const prefs = localStorage.getItem('lifemosaic_ui_prefs');
+    const entries = localStorage.getItem('lifemosaic_v2_entries');
+    const dims = localStorage.getItem('lifemosaic_v2_dims');
+    const settings = localStorage.getItem('lifemosaic_v2_settings');
+    const prefs = localStorage.getItem('lifemosaic_v2_ui_prefs');
     if (entries) state.entries = JSON.parse(entries);
     if (dims) state.dimensions = JSON.parse(dims);
     else { state.dimensions = DEFAULT_DIMS.map(d => ({...d})); save(); }
@@ -1140,7 +1143,7 @@ function load() {
     state.dimensions = DEFAULT_DIMS.map(d => ({...d}));
   }
 }
-
+ 
 // ==================== UTILS ====================
 function dateKey(date) {
   const d = date instanceof Date ? date : new Date(date);
@@ -1178,7 +1181,7 @@ function toast(msg, dur=2800) {
   el.classList.add('show');
   setTimeout(() => el.classList.remove('show'), dur);
 }
-
+ 
 // ==================== HEATMAP UTILS ====================
 function getPaletteColors() {
   return PALETTES[state.settings.palette] || PALETTES.blue;
@@ -1200,7 +1203,7 @@ function hexAlpha(hex, a) {
   const b = parseInt(hex.slice(5,7),16);
   return `rgba(${r},${g},${b},${a})`;
 }
-
+ 
 // ==================== YEAR GRID ====================
 function buildYearGrid(year, valFn, colorFn, tooltipFn) {
   const jan1 = new Date(year, 0, 1);
@@ -1208,10 +1211,10 @@ function buildYearGrid(year, valFn, colorFn, tooltipFn) {
   const startPad = jan1.getDay(); // 0=Sun
   const totalCells = startPad + 366;
   const weeks = Math.ceil(totalCells / 7);
-
+ 
   const rows = document.createElement('div');
   rows.style.cssText = 'display:flex;gap:3px;';
-
+ 
   // Day labels col
   const dayLabels = document.createElement('div');
   dayLabels.style.cssText = 'display:flex;flex-direction:column;gap:2px;padding-top:0px;';
@@ -1223,19 +1226,19 @@ function buildYearGrid(year, valFn, colorFn, tooltipFn) {
     dayLabels.appendChild(lbl);
   });
   rows.appendChild(dayLabels);
-
+ 
   let monthLabels = [];
   let lastMonth = -1;
-
+ 
   for (let w = 0; w < weeks; w++) {
     const col = document.createElement('div');
     col.style.cssText = 'display:flex;flex-direction:column;gap:2px;';
-
+ 
     for (let d = 0; d < 7; d++) {
       const dayIndex = w * 7 + d - startPad;
       const cell = document.createElement('div');
       cell.style.cssText = 'width:13px;height:13px;border-radius:2px;cursor:pointer;transition:transform 0.1s;position:relative;flex-shrink:0;';
-
+ 
       if (dayIndex < 0 || dayIndex > 365) {
         cell.style.background = 'transparent';
         cell.style.cursor = 'default';
@@ -1272,7 +1275,7 @@ function buildYearGrid(year, valFn, colorFn, tooltipFn) {
     }
     rows.appendChild(col);
   }
-
+ 
   const container = document.createElement('div');
   container.style.cssText = 'position:relative;';
   const mlRowAbsolute = document.createElement('div');
@@ -1287,7 +1290,7 @@ function buildYearGrid(year, valFn, colorFn, tooltipFn) {
   container.appendChild(rows);
   return container;
 }
-
+ 
 function buildLegend(customColor) {
   const p = getPaletteColors();
   const legend = document.createElement('div');
@@ -1310,9 +1313,9 @@ function buildLegend(customColor) {
   legend.appendChild(more);
   return legend;
 }
-
+ 
 // ==================== RENDER FUNCTIONS ====================
-
+ 
 function renderStats() {
   const el = document.getElementById('statsGrid');
   if (!el) return;
@@ -1320,7 +1323,7 @@ function renderStats() {
   const entries = Object.entries(state.entries).sort(([a],[b]) => a.localeCompare(b));
   const totalDays = entries.length;
   const year = state.ui.selectedYear;
-
+ 
   let streak = 0, d = new Date();
   d.setDate(d.getDate()-1);
   while (true) {
@@ -1330,7 +1333,7 @@ function renderStats() {
     if (streak > 1000) break;
   }
   if (state.entries[today]) streak++;
-
+ 
   let longest = 0, cur = 0;
   if (entries.length) {
     const keys = entries.map(([k])=>k).sort();
@@ -1343,25 +1346,25 @@ function renderStats() {
       else cur = 1;
     }
   }
-
+ 
   const yearDays = entries.filter(([k]) => k.startsWith(year)).length;
   const daysInYear = 365;
   const yearPct = Math.round(yearDays / daysInYear * 100);
-
+ 
   let totalScore = 0, scoreCount = 0;
   entries.filter(([k])=>k.startsWith(year)).forEach(([,e]) => {
     const a = avgEntry(e);
     if (a > 0) { totalScore += a; scoreCount++; }
   });
   const avgScore = scoreCount ? (totalScore/scoreCount).toFixed(1) : '—';
-
+ 
   const stats = [
     {icon:'⭐', label:'Year Avg Score', val: avgScore, sub:`${year} average`},
     {icon:'🔥', label:'Current Streak', val: streak + (streak===1?' day':' days'), sub:'Consecutive days'},
     {icon:'🏆', label:'Longest Streak', val: longest + (longest===1?' day':' days'), sub:'All time best'},
     {icon:'📅', label:'Days Logged', val: totalDays, sub:`${yearDays} this year`},
   ];
-
+ 
   el.innerHTML = stats.map(s => `
     <div class="card">
       <div class="card-header">
@@ -1373,7 +1376,7 @@ function renderStats() {
     </div>
   `).join('');
 }
-
+ 
 function renderYearPills(containerId, callback) {
   const el = document.getElementById(containerId);
   if (!el) return;
@@ -1395,13 +1398,13 @@ function renderYearPills(containerId, callback) {
     });
   });
 }
-
+ 
 function renderMasterHeatmap() {
   const el = document.getElementById('masterHeatmap');
   const legend = document.getElementById('masterLegend');
   if (!el) return;
   const year = state.ui.selectedYear;
-
+ 
   const grid = buildYearGrid(year,
     dk => {
       const e = state.entries[dk];
@@ -1423,13 +1426,13 @@ function renderMasterHeatmap() {
     legend.appendChild(buildLegend());
   }
 }
-
+ 
 function renderDimAverages() {
   const el = document.getElementById('dimAverages');
   if (!el) return;
   const year = state.ui.selectedYear;
   const yearEntries = Object.entries(state.entries).filter(([k]) => k.startsWith(year));
-
+ 
   const dimScores = {};
   state.dimensions.forEach(d => { dimScores[d.id] = {sum:0, count:0}; });
   yearEntries.forEach(([, entry]) => {
@@ -1441,13 +1444,13 @@ function renderDimAverages() {
       }
     });
   });
-
+ 
   const rows = state.dimensions.map(d => {
     const s = dimScores[d.id];
     const avg = s.count ? s.sum/s.count : 0;
     return {d, avg};
   }).sort((a,b) => b.avg - a.avg);
-
+ 
   el.innerHTML = rows.map(({d, avg}) => `
     <div class="bar-row">
       <div class="bar-label">${d.icon} ${d.name}</div>
@@ -1458,7 +1461,7 @@ function renderDimAverages() {
     </div>
   `).join('');
 }
-
+ 
 function renderMonthlyOverview() {
   const el = document.getElementById('monthlyOverview');
   if (!el) return;
@@ -1473,7 +1476,7 @@ function renderMonthlyOverview() {
     const avg = avgs.length ? avgs.reduce((a,b)=>a+b,0)/avgs.length : 0;
     monthData.push({ month: m, avg, count: avgs.length });
   }
-
+ 
   const maxAvg = Math.max(...monthData.map(d=>d.avg), 1);
   el.innerHTML = `
     <div style="display:flex;gap:6px;align-items:flex-end;height:80px;">
@@ -1488,18 +1491,18 @@ function renderMonthlyOverview() {
     </div>
   `;
 }
-
+ 
 function renderHeatmaps() {
   const el = document.getElementById('heatmapsContainer');
   if (!el) return;
   const year = state.ui.selectedYear;
   el.innerHTML = '';
-
+ 
   state.dimensions.forEach(dim => {
     const section = document.createElement('div');
     section.className = 'section card fade-in';
     section.style.marginBottom = '16px';
-
+ 
     const header = document.createElement('div');
     header.className = 'card-header';
     header.innerHTML = `
@@ -1509,7 +1512,7 @@ function renderHeatmaps() {
       </div>
     `;
     section.appendChild(header);
-
+ 
     const wrap = document.createElement('div');
     wrap.className = 'heatmap-wrap';
     const grid = buildYearGrid(year,
@@ -1519,25 +1522,25 @@ function renderHeatmaps() {
     );
     wrap.appendChild(grid);
     section.appendChild(wrap);
-
+ 
     const legend = document.createElement('div');
     legend.className = 'heatmap-legend';
     legend.style.marginTop = '8px';
     legend.appendChild(buildLegend(dim.color));
     section.appendChild(legend);
-
+ 
     el.appendChild(section);
   });
-
+ 
   renderYearPills('heatmapYearPills', renderHeatmaps);
 }
-
+ 
 function renderDNA() {
   const el = document.getElementById('dnaGrid');
   const legendEl = document.getElementById('dnaLegend');
   if (!el) return;
   const year = state.ui.selectedYear;
-
+ 
   if (legendEl) {
     legendEl.innerHTML = state.dimensions.map(d => `
       <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);">
@@ -1546,11 +1549,11 @@ function renderDNA() {
       </div>
     `).join('');
   }
-
+ 
   el.innerHTML = '';
   const jan1 = new Date(year, 0, 1);
   const dec31 = new Date(year, 11, 31);
-
+ 
   for (let d = new Date(jan1); d <= dec31; d.setDate(d.getDate()+1)) {
     const dk = dateKey(d);
     const entry = state.entries[dk];
@@ -1558,7 +1561,7 @@ function renderDNA() {
     cell.className = 'dna-cell tooltip';
     cell.style.width = '18px';
     cell.style.height = '18px';
-
+ 
     if (entry) {
       const domId = dominantDim(entry);
       const dim = domId ? getDim(domId) : null;
@@ -1580,18 +1583,18 @@ function renderDNA() {
     cell.addEventListener('click', () => openDay(dk));
     el.appendChild(cell);
   }
-
+ 
   renderYearPills('dnaYearPills', renderDNA);
 }
-
+ 
 function renderCalendar() {
   const grid = document.getElementById('calGrid');
   const label = document.getElementById('calMonthLabel');
   if (!grid || !label) return;
-
+ 
   const { calYear, calMonth } = state.ui;
   label.textContent = `${MONTH_FULL[calMonth]} ${calYear}`;
-
+ 
   grid.innerHTML = '';
   DAYS_SHORT.forEach(d => {
     const h = document.createElement('div');
@@ -1599,12 +1602,12 @@ function renderCalendar() {
     h.textContent = d.slice(0,1);
     grid.appendChild(h);
   });
-
+ 
   const first = new Date(calYear, calMonth, 1);
   const last = new Date(calYear, calMonth+1, 0);
   const pad = first.getDay();
   const today = todayKey();
-
+ 
   for (let i = 0; i < pad; i++) {
     const prev = new Date(calYear, calMonth, -pad+i+1);
     const cell = document.createElement('div');
@@ -1612,7 +1615,7 @@ function renderCalendar() {
     cell.textContent = prev.getDate();
     grid.appendChild(cell);
   }
-
+ 
   for (let d = 1; d <= last.getDate(); d++) {
     const date = new Date(calYear, calMonth, d);
     const dk = dateKey(date);
@@ -1639,7 +1642,7 @@ function renderCalendar() {
     grid.appendChild(cell);
   }
 }
-
+ 
 function renderDayDetail(dk) {
   const el = document.getElementById('calDayDetail');
   if (!el) return;
@@ -1704,26 +1707,26 @@ function renderDayDetail(dk) {
     </div>` : ''}
   `;
 }
-
+ 
 function renderAnalytics() {
   const topEl = document.getElementById('analyticsTop');
   const rankEl = document.getElementById('dimRankings');
   const tbEl = document.getElementById('topBottomDays');
   if (!topEl) return;
-
+ 
   const entries = Object.entries(state.entries).sort(([a],[b])=>a.localeCompare(b));
   if (!entries.length) {
     topEl.innerHTML = '<div class="empty-state" style="grid-column:span 2"><div class="empty-icon">📊</div><div class="empty-title">No data yet</div><div class="empty-desc">Start checking in daily to see analytics</div></div>';
     return;
   }
-
+ 
   let bestDay = null, bestScore = 0, worstDay = null, worstScore = 6;
   entries.forEach(([k, e]) => {
     const a = avgEntry(e);
     if (a > bestScore) { bestScore = a; bestDay = k; }
     if (a > 0 && a < worstScore) { worstScore = a; worstDay = k; }
   });
-
+ 
   const monthMap = {};
   entries.forEach(([k, e]) => {
     const mk = k.slice(0,7);
@@ -1738,7 +1741,7 @@ function renderAnalytics() {
     if (ma > bestMA) { bestMA = ma; bestMonth = mk; }
     if (ma < worstMA) { worstMA = ma; worstMonth = mk; }
   });
-
+ 
   const dimAgg = {};
   state.dimensions.forEach(d => { dimAgg[d.id] = {sum:0, count:0}; });
   entries.forEach(([,e]) => {
@@ -1751,7 +1754,7 @@ function renderAnalytics() {
   const sortedDims = [...dimAvgs].sort((a,b)=>b.avg-a.avg);
   const highestDim = sortedDims[0];
   const lowestDim = sortedDims[sortedDims.length-1];
-
+ 
   // Most improved / most neglected: compare first-half vs second-half average per dimension
   const sortedKeys = entries.map(([k])=>k).sort();
   const mid = Math.floor(sortedKeys.length/2);
@@ -1778,7 +1781,7 @@ function renderAnalytics() {
     if (delta > mostImprovedDelta) { mostImprovedDelta = delta; mostImproved = d; }
     if (delta < mostNeglectedDelta) { mostNeglectedDelta = delta; mostNeglected = d; }
   });
-
+ 
   let longestPosStreak = 0, curP = 0;
   const keys = entries.map(([k])=>k).sort();
   keys.forEach((k,i) => {
@@ -1788,15 +1791,15 @@ function renderAnalytics() {
       longestPosStreak = Math.max(longestPosStreak, curP);
     } else curP = 0;
   });
-
+ 
   const overallAvg = entries.reduce((sum,[,e])=>sum+avgEntry(e),0)/entries.length;
-
+ 
   const fmtMonth = mk => {
     if (!mk) return '—';
     const [y,m] = mk.split('-');
     return `${MONTH_FULL[parseInt(m)-1]} ${y}`;
   };
-
+ 
   topEl.innerHTML = `
     <div class="card">
       <div class="card-title" style="margin-bottom:12px;">Key Insights</div>
@@ -1816,7 +1819,7 @@ function renderAnalytics() {
       <div class="analytics-row"><span class="analytics-label">📊 Total Entries</span><span class="analytics-val">${entries.length}</span></div>
     </div>
   `;
-
+ 
   if (rankEl) {
     rankEl.innerHTML = `
       <div class="bar-chart">
@@ -1835,7 +1838,7 @@ function renderAnalytics() {
       </div>
     `;
   }
-
+ 
   if (tbEl) {
     const sorted = [...entries].sort(([,a],[,b]) => avgEntry(b) - avgEntry(a));
     const top10 = sorted.slice(0,10);
@@ -1862,30 +1865,30 @@ function renderAnalytics() {
     tbEl.innerHTML = dayCard('🏆 Top 10 Days', top10) + dayCard('⚠️ Bottom 10 Days', bottom10);
   }
 }
-
+ 
 function renderReports() {
   renderMonthReport();
   renderYearReport();
   renderYearPills('yearReportPills', renderYearReport);
 }
-
+ 
 function renderMonthReport() {
   const el = document.getElementById('monthReport');
   const label = document.getElementById('repMonthLabel');
   if (!el) return;
   const { repYear, repMonth } = state.ui;
   if (label) label.textContent = `${MONTH_FULL[repMonth]} ${repYear}`;
-
+ 
   const monthEntries = Object.entries(state.entries).filter(([k]) => {
     const d = parseKey(k);
     return d.getFullYear() === repYear && d.getMonth() === repMonth;
   });
-
+ 
   if (!monthEntries.length) {
     el.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No data for ${MONTH_FULL[repMonth]} ${repYear}</div></div></div>`;
     return;
   }
-
+ 
   const dimSums = {};
   state.dimensions.forEach(d => dimSums[d.id] = {sum:0,count:0});
   monthEntries.forEach(([,e]) => {
@@ -1894,11 +1897,11 @@ function renderMonthReport() {
       if (dimSums[id] && v>0) { dimSums[id].sum+=v; dimSums[id].count++; }
     });
   });
-
+ 
   const dimAvgs = state.dimensions.map(d => ({d, avg: dimSums[d.id].count ? dimSums[d.id].sum/dimSums[d.id].count : 0}));
   const sorted = [...dimAvgs].filter(x=>x.avg>0).sort((a,b)=>b.avg-a.avg);
   const overallAvg = monthEntries.reduce((sum,[,e])=>sum+avgEntry(e),0)/monthEntries.length;
-
+ 
   const domCount = {};
   monthEntries.forEach(([,e]) => {
     const id = dominantDim(e);
@@ -1906,7 +1909,7 @@ function renderMonthReport() {
   });
   const domId = Object.entries(domCount).sort(([,a],[,b])=>b-a)[0]?.[0];
   const dom = domId ? getDim(domId) : null;
-
+ 
   el.innerHTML = `
     <div class="grid-2" style="gap:16px;">
       <div class="card">
@@ -1942,7 +1945,7 @@ function renderMonthReport() {
     </div>
   `;
 }
-
+ 
 function renderYearReport() {
   const el = document.getElementById('yearReport');
   if (!el) return;
@@ -1952,7 +1955,7 @@ function renderYearReport() {
     el.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No data for ${year}</div></div></div>`;
     return;
   }
-
+ 
   const overallAvg = entries.reduce((sum,[,e])=>sum+avgEntry(e),0)/entries.length;
   const monthAvgs = [];
   for (let m=0;m<12;m++) {
@@ -1962,7 +1965,7 @@ function renderYearReport() {
   }
   const bestM = [...monthAvgs].filter(m=>m.count>0).sort((a,b)=>b.avg-a.avg)[0];
   const worstM = [...monthAvgs].filter(m=>m.count>0).sort((a,b)=>a.avg-b.avg)[0];
-
+ 
   const dimSums = {};
   state.dimensions.forEach(d=>dimSums[d.id]={sum:0,count:0});
   entries.forEach(([,e])=>{
@@ -1976,7 +1979,7 @@ function renderYearReport() {
   entries.forEach(([,e])=>{const id=dominantDim(e);if(id)domCount[id]=(domCount[id]||0)+1;});
   const domId = Object.entries(domCount).sort(([,a],[,b])=>b-a)[0]?.[0];
   const dom = domId ? getDim(domId) : null;
-
+ 
   const sortedEntries = [...entries].sort(([,a],[,b]) => avgEntry(b) - avgEntry(a));
   const top10 = sortedEntries.slice(0,10);
   const bottom10 = sortedEntries.slice(-10).reverse();
@@ -1998,7 +2001,7 @@ function renderYearReport() {
       }).join('')}
     </div>
   `;
-
+ 
   el.innerHTML = `
     <div class="grid-3" style="gap:16px;margin-bottom:16px;">
       <div class="card card-sm" style="text-align:center;">
@@ -2049,7 +2052,7 @@ function renderYearReport() {
     </div>
   `;
 }
-
+ 
 function renderSearch() {
   const input = document.getElementById('searchInput');
   const results = document.getElementById('searchResults');
@@ -2085,7 +2088,7 @@ function renderSearch() {
     `;
   }).join('');
 }
-
+ 
 function renderDimList() {
   const el = document.getElementById('dimList');
   if (!el) return;
@@ -2106,7 +2109,7 @@ function renderDimList() {
   `).join('');
   if (!locked) setupDragSort();
 }
-
+ 
 function renderSettings() {
   renderDimList();
   document.querySelectorAll('[data-theme]').forEach(btn => {
@@ -2117,7 +2120,7 @@ function renderSettings() {
   });
   updateAuthorUI();
 }
-
+ 
 function renderAll() {
   const view = state.ui.currentView;
   if (view === 'dashboard') {
@@ -2146,7 +2149,7 @@ function renderAll() {
     renderSettings();
   }
 }
-
+ 
 // ==================== CHECK-IN ====================
 function buildCheckinForm(dk, container) {
   const entry = state.entries[dk] || { ratings:{}, note:'' };
@@ -2174,7 +2177,7 @@ function buildCheckinForm(dk, container) {
       <textarea class="form-input checkin-note" id="checkinNote" placeholder="How was your day?">${entry.note||''}</textarea>
     </div>
   `;
-
+ 
   container.querySelectorAll('.star-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const dimId = btn.dataset.dim;
@@ -2200,7 +2203,7 @@ function buildCheckinForm(dk, container) {
     });
   });
 }
-
+ 
 function getCheckinData(container) {
   const ratings = {};
   state.dimensions.forEach(d => {
@@ -2215,14 +2218,14 @@ function getCheckinData(container) {
   const note = document.getElementById('checkinNote')?.value || '';
   return { ratings, note };
 }
-
+ 
 function openCheckin() {
   const yesterday = new Date();
   yesterday.setDate(yesterday.getDate()-1);
   const dk = dateKey(yesterday);
   openCheckinForDate(dk);
 }
-
+ 
 function openCheckinForDate(dk) {
   const overlay = document.getElementById('checkinOverlay');
   const body = document.getElementById('checkinBody');
@@ -2233,7 +2236,7 @@ function openCheckinForDate(dk) {
   buildCheckinForm(dk, body);
   overlay.classList.add('open');
 }
-
+ 
 function saveCheckin() {
   const dk = state.editDayDate;
   if (!dk) return;
@@ -2250,7 +2253,7 @@ function saveCheckin() {
   toast('✅ Check-in saved!');
   renderAll();
 }
-
+ 
 // ==================== DAY DETAIL PANEL ====================
 function openDay(dk) {
   const panel = document.getElementById('detailPanel');
@@ -2259,16 +2262,16 @@ function openDay(dk) {
   const body = document.getElementById('detailBody');
   const editBtn = document.getElementById('detailEditBtn');
   if (!panel) return;
-
+ 
   dateEl.textContent = formatDate(dk);
   const entry = state.entries[dk];
   const avg = entry ? avgEntry(entry) : 0;
   const domId = entry ? dominantDim(entry) : null;
   const dom = domId ? getDim(domId) : null;
   titleEl.textContent = dom ? `${dom.icon} ${dom.name} Day` : (entry ? 'Day Entry' : 'No Entry');
-
+ 
   editBtn.onclick = () => openEditDay(dk);
-
+ 
   if (!entry) {
     body.innerHTML = `
       <div class="empty-state">
@@ -2316,23 +2319,30 @@ function openDay(dk) {
   }
   panel.classList.add('open');
 }
-
+ 
 function closeDetailPanel() {
   document.getElementById('detailPanel')?.classList.remove('open');
 }
-
+ 
 // ==================== EDIT DAY ====================
+// Anyone (author or viewer) can edit or delete THEIR OWN day entries —
+// this only ever touches the single entries[dk] record for the day
+// being edited, never the dimension list or any other day's data.
+// "Clear All Data" in Settings is the separate, author-only action that
+// wipes everything at once.
 function openEditDay(dk) {
   state.editDayDate = dk;
   const overlay = document.getElementById('editDayOverlay');
   const body = document.getElementById('editDayBody');
   const title = document.getElementById('editDayTitle');
+  const deleteBtn = document.getElementById('deleteEntryBtn');
   if (!overlay || !body) return;
   title.textContent = `Edit — ${formatDate(dk)}`;
   buildCheckinForm(dk, body);
+  if (deleteBtn) deleteBtn.style.display = state.entries[dk] ? 'inline-flex' : 'none';
   overlay.classList.add('open');
 }
-
+ 
 function saveEditDay() {
   const dk = state.editDayDate;
   if (!dk) return;
@@ -2345,10 +2355,23 @@ function saveEditDay() {
   closeDetailPanel();
   renderAll();
 }
-
+ 
+function deleteEntry() {
+  const dk = state.editDayDate;
+  if (!dk || !state.entries[dk]) return;
+  if (!confirm(`Delete your entry for ${formatDate(dk)}? This can't be undone.`)) return;
+  delete state.entries[dk];
+  save();
+  document.getElementById('editDayOverlay').classList.remove('open');
+  toast('🗑️ Entry deleted');
+  closeDetailPanel();
+  if (state.ui.selectedDay === dk) state.ui.selectedDay = null;
+  renderAll();
+}
+ 
 // ==================== DIMENSION MODAL (author only) ====================
 const PRESET_ICONS = ['💻','📚','🏃','❤️','😴','📱','🎨','💰','🤝','🧘','🍎','✍️','🎵','🌿','🎯','🔬','🏋️','🎮','🌍','☀️','🌙','🔥','💡','📷','🎭','🧠','🚀','⚡','🏠','🐾','🎪','🎲','🛒','🚴','🏊','🎤','📰','🏡','🌸','🍕'];
-
+ 
 function openAddDim() {
   if (!requireAuthor('Add Dimension')) return;
   state.editDimId = null;
@@ -2359,7 +2382,7 @@ function openAddDim() {
   buildColorGrid();
   document.getElementById('dimModalOverlay').classList.add('open');
 }
-
+ 
 function openEditDim(id) {
   if (!requireAuthor('Edit Dimension')) return;
   const dim = getDim(id);
@@ -2372,7 +2395,7 @@ function openEditDim(id) {
   buildColorGrid();
   document.getElementById('dimModalOverlay').classList.add('open');
 }
-
+ 
 function buildIconGrid() {
   const el = document.getElementById('iconGrid');
   if (!el) return;
@@ -2387,7 +2410,7 @@ function buildIconGrid() {
     });
   });
 }
-
+ 
 function buildColorGrid() {
   const el = document.getElementById('colorGrid');
   if (!el) return;
@@ -2402,7 +2425,7 @@ function buildColorGrid() {
     });
   });
 }
-
+ 
 function saveDim() {
   if (!requireAuthor('Save Dimension')) return;
   const name = document.getElementById('dimNameInput').value.trim();
@@ -2418,7 +2441,7 @@ function saveDim() {
   toast(state.editDimId ? '✅ Dimension updated!' : '✅ Dimension added!');
   renderSettings();
 }
-
+ 
 function deleteDim(id) {
   if (!requireAuthor('Delete Dimension')) return;
   if (!confirm('Delete this dimension? Ratings for this dimension will be removed from all entries.')) return;
@@ -2428,7 +2451,7 @@ function deleteDim(id) {
   renderSettings();
   toast('🗑️ Dimension deleted');
 }
-
+ 
 // ==================== DRAG SORT (author only) ====================
 function setupDragSort() {
   const el = document.getElementById('dimList');
@@ -2457,7 +2480,7 @@ function setupDragSort() {
     });
   });
 }
-
+ 
 // ==================== THEME ====================
 function applyTheme(theme) {
   document.body.className = '';
@@ -2468,7 +2491,7 @@ function applyTheme(theme) {
   document.querySelectorAll('[data-theme]').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
   save();
 }
-
+ 
 // ==================== DATA MANAGEMENT (import/clear are author only) ====================
 function exportData() {
   const data = {
@@ -2487,12 +2510,12 @@ function exportData() {
   URL.revokeObjectURL(url);
   toast('📤 Data exported!');
 }
-
+ 
 function importData() {
   if (!requireAuthor('Import Data')) return;
   document.getElementById('importOverlay').classList.add('open');
 }
-
+ 
 function confirmImport() {
   if (!requireAuthor('Import Data')) return;
   const file = document.getElementById('importFile').files[0];
@@ -2523,7 +2546,7 @@ function confirmImport() {
     status.textContent = 'Please select a file or paste JSON';
   }
 }
-
+ 
 function clearData() {
   if (!requireAuthor('Clear All Data')) return;
   if (!confirm('This will delete ALL your data permanently. Are you sure?')) return;
@@ -2534,7 +2557,7 @@ function clearData() {
   toast('🗑️ All data cleared');
   renderAll();
 }
-
+ 
 // ==================== NAVIGATION ====================
 function switchView(view) {
   state.ui.currentView = view;
@@ -2552,7 +2575,7 @@ function switchView(view) {
   document.getElementById('topbarTitle').textContent = titles[view] || view;
   renderAll();
 }
-
+ 
 // ==================== AUTO CHECKIN ====================
 function checkAutoCheckin() {
   const today = todayKey();
@@ -2565,13 +2588,13 @@ function checkAutoCheckin() {
     }, 800);
   }
 }
-
+ 
 // ==================== INIT ====================
 function init() {
   load();
   restoreAuthorSession();
   applyTheme(state.settings.theme);
-
+ 
   // Sidebar collapse
   const sidebar = document.getElementById('sidebar');
   const collapseBtn = document.getElementById('collapseBtn');
@@ -2582,12 +2605,12 @@ function init() {
     collapseBtn.textContent = state.ui.sidebarCollapsed ? '▶' : '◀';
     save();
   });
-
+ 
   // Nav items
   document.querySelectorAll('.nav-item').forEach(btn => {
     btn.addEventListener('click', () => switchView(btn.dataset.view));
   });
-
+ 
   // Checkin
   document.getElementById('checkinBtn').addEventListener('click', openCheckin);
   document.getElementById('closeCheckin').addEventListener('click', () => {
@@ -2599,14 +2622,14 @@ function init() {
     document.getElementById('checkinOverlay').classList.remove('open');
   });
   document.getElementById('saveCheckin').addEventListener('click', saveCheckin);
-
+ 
   document.getElementById('checkinOverlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) document.getElementById('checkinOverlay').classList.remove('open');
   });
-
+ 
   // Detail panel
   document.getElementById('closeDetail').addEventListener('click', closeDetailPanel);
-
+ 
   // Edit day modal
   document.getElementById('closeEditDay').addEventListener('click', () => {
     document.getElementById('editDayOverlay').classList.remove('open');
@@ -2615,10 +2638,11 @@ function init() {
     document.getElementById('editDayOverlay').classList.remove('open');
   });
   document.getElementById('saveEditDay').addEventListener('click', saveEditDay);
+  document.getElementById('deleteEntryBtn').addEventListener('click', deleteEntry);
   document.getElementById('editDayOverlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) document.getElementById('editDayOverlay').classList.remove('open');
   });
-
+ 
   // Dim modal
   document.getElementById('addDimBtn').addEventListener('click', openAddDim);
   document.getElementById('closeDimModal').addEventListener('click', () => {
@@ -2631,7 +2655,7 @@ function init() {
   document.getElementById('dimModalOverlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) document.getElementById('dimModalOverlay').classList.remove('open');
   });
-
+ 
   // Theme tabs
   document.querySelectorAll('[data-theme]').forEach(btn => {
     btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
@@ -2641,7 +2665,7 @@ function init() {
     const next = themes[(themes.indexOf(state.settings.theme)+1)%themes.length];
     applyTheme(next);
   });
-
+ 
   // Palette tabs
   document.querySelectorAll('[data-palette]').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -2652,7 +2676,7 @@ function init() {
       else if (state.ui.currentView === 'heatmaps') { renderHeatmaps(); }
     });
   });
-
+ 
   // Calendar navigation
   document.getElementById('calPrev').addEventListener('click', () => {
     state.ui.calMonth--;
@@ -2670,7 +2694,7 @@ function init() {
     state.ui.calMonth = now.getMonth();
     renderCalendar();
   });
-
+ 
   // Report navigation
   document.getElementById('repPrev').addEventListener('click', () => {
     state.ui.repMonth--;
@@ -2682,10 +2706,10 @@ function init() {
     if (state.ui.repMonth > 11) { state.ui.repMonth = 0; state.ui.repYear++; }
     renderMonthReport();
   });
-
+ 
   // Search
   document.getElementById('searchInput').addEventListener('input', renderSearch);
-
+ 
   // Export / Import / Clear
   document.getElementById('exportBtn').addEventListener('click', exportData);
   document.getElementById('importBtn').addEventListener('click', importData);
@@ -2697,7 +2721,7 @@ function init() {
     document.getElementById('importOverlay').classList.remove('open');
   });
   document.getElementById('confirmImport').addEventListener('click', confirmImport);
-
+ 
   // Import zone
   const zone = document.getElementById('importZone');
   const fileInput = document.getElementById('importFile');
@@ -2720,7 +2744,7 @@ function init() {
       document.getElementById('importStatus').style.color = 'var(--accent)';
     }
   });
-
+ 
   // Author login modal
   document.getElementById('authorModeBadge').addEventListener('click', () => {
     if (confirm('Sign out of Author Mode?')) authorLogout();
@@ -2753,7 +2777,7 @@ function init() {
   document.getElementById('authorLoginOverlay').addEventListener('click', e => {
     if (e.target === e.currentTarget) document.getElementById('authorLoginOverlay').classList.remove('open');
   });
-
+ 
   // Keyboard shortcuts
   document.addEventListener('keydown', e => {
     if (e.key === 'Escape') {
@@ -2761,58 +2785,29 @@ function init() {
       closeDetailPanel();
     }
   });
-
+ 
   // Initialize dashboard year
   state.ui.selectedYear = new Date().getFullYear();
-
+ 
   document.querySelectorAll('[data-palette]').forEach(b => {
     b.classList.toggle('active', b.dataset.palette === state.settings.palette);
   });
-
+ 
   // Initial render
   switchView('dashboard');
   updateAuthorUI();
-
+ 
   // Auto checkin prompt
   checkAutoCheckin();
-
-  // Seed demo data if empty
-  if (!Object.keys(state.entries).length) {
-    seedDemoData();
-  }
 }
-
-// ==================== DEMO DATA ====================
-function seedDemoData() {
-  const now = new Date();
-  for (let i = 120; i >= 1; i--) {
-    const d = new Date(now);
-    d.setDate(d.getDate() - i);
-    if (Math.random() > 0.15) {
-      const ratings = {};
-      state.dimensions.forEach(dim => {
-        if (Math.random() > 0.1) {
-          ratings[dim.id] = Math.floor(Math.random() * 5) + 1;
-        }
-      });
-      const dk = dateKey(d);
-      state.entries[dk] = {
-        ratings,
-        note: Math.random() > 0.7 ? ['Great day overall!', 'Feeling productive', 'Needed more rest', 'Made progress on goals', 'Social connections recharged me', 'Focused work session', ''][Math.floor(Math.random()*7)] : ''
-      };
-    }
-  }
-  save();
-  renderAll();
-}
-
+ 
 // ==================== MAKE GLOBAL ====================
 window.openDay = openDay;
 window.openEditDay = openEditDay;
 window.openCheckinForDate = openCheckinForDate;
 window.openEditDim = openEditDim;
 window.deleteDim = deleteDim;
-
+ 
 // ==================== START ====================
 document.addEventListener('DOMContentLoaded', init);
 </script>
