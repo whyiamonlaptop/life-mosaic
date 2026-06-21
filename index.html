@@ -1,0 +1,2820 @@
+<!--
+  Life Mosaic
+  Created by Vishen
+
+  Copyright (c) 2026 Vishen
+  All Rights Reserved.
+
+  Unauthorized redistribution, modification, resale,
+  or commercial use is prohibited without permission.
+
+  NOTE ON "AUTHOR MODE" BELOW:
+  This file includes a client-side password check that toggles an
+  "Author Mode" UI state. Because this is a static HTML/JS file with
+  no server, this is a PRESENTATIONAL lock, not real security — anyone
+  who opens browser DevTools can read the password in this source or
+  call the unlocked functions directly. It's enough to stop casual
+  visitors/friends from accidentally editing your structure, but it
+  will NOT stop a determined person and should never guard sensitive
+  data. For real access control, edits need to happen on a server
+  (see the Phase 2 notes in the hosting guide).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Life Mosaic | Created by Vishen</title>
+<style>
+  /* ==================== RESET & BASE ==================== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #0d0f14;
+    --bg2: #13151c;
+    --bg3: #1a1d27;
+    --bg4: #22263a;
+    --border: #2a2e42;
+    --border2: #363b55;
+    --text: #e8eaf0;
+    --text2: #9ba3bf;
+    --text3: #5c6380;
+    --accent: #6c8ef7;
+    --accent2: #a78bfa;
+    --accent3: #34d399;
+    --accent4: #f59e0b;
+    --danger: #f43f5e;
+    --success: #10b981;
+    --card-radius: 14px;
+    --radius: 8px;
+    --sm-radius: 5px;
+    --font: 'Inter', system-ui, -apple-system, sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --shadow: 0 4px 24px rgba(0,0,0,0.4);
+    --shadow-lg: 0 8px 48px rgba(0,0,0,0.6);
+    --transition: 0.18s ease;
+  }
+  .theme-light {
+    --bg: #f4f5f9;
+    --bg2: #ffffff;
+    --bg3: #eef0f7;
+    --bg4: #e4e7f4;
+    --border: #d4d8ee;
+    --border2: #bec4e0;
+    --text: #18192e;
+    --text2: #4a5278;
+    --text3: #8891b8;
+    --shadow: 0 4px 24px rgba(100,110,180,0.1);
+    --shadow-lg: 0 8px 48px rgba(100,110,180,0.18);
+  }
+  .theme-oled {
+    --bg: #000000;
+    --bg2: #080809;
+    --bg3: #0f1016;
+    --bg4: #16181f;
+    --border: #1e2030;
+    --border2: #252840;
+  }
+  html, body { height: 100%; overflow-x: hidden; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.6;
+    transition: background 0.3s, color 0.3s;
+  }
+  a { color: var(--accent); text-decoration: none; }
+  button { cursor: pointer; font-family: var(--font); }
+  input, textarea, select { font-family: var(--font); }
+  ::-webkit-scrollbar { width: 6px; height: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg2); }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text3); }
+
+  /* ==================== LAYOUT ==================== */
+  #app { display: flex; height: 100vh; }
+  #sidebar {
+    width: 220px; min-width: 220px;
+    background: var(--bg2);
+    border-right: 1px solid var(--border);
+    display: flex; flex-direction: column;
+    padding: 0; overflow: hidden;
+    transition: width 0.25s ease;
+    z-index: 100;
+  }
+  #sidebar.collapsed { width: 58px; min-width: 58px; }
+  .sidebar-logo {
+    display: flex; align-items: center; gap: 10px;
+    padding: 18px 14px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-icon {
+    width: 32px; height: 32px; border-radius: 9px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .logo-text-wrap { display: flex; flex-direction: column; overflow: hidden; white-space: nowrap; transition: opacity 0.2s; }
+  .logo-text {
+    font-weight: 700; font-size: 15px; letter-spacing: -0.3px;
+  }
+  .logo-sub {
+    font-size: 10px; color: var(--text3); font-weight: 500; letter-spacing: 0.2px;
+  }
+  #sidebar.collapsed .logo-text-wrap { opacity: 0; pointer-events: none; }
+  .sidebar-nav { flex: 1; padding: 10px 8px; overflow-y: auto; }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 10px; border-radius: var(--radius);
+    color: var(--text2); font-size: 13.5px; font-weight: 500;
+    cursor: pointer; transition: all var(--transition);
+    border: none; background: none; width: 100%;
+    white-space: nowrap; overflow: hidden;
+    position: relative;
+  }
+  .nav-item:hover { background: var(--bg3); color: var(--text); }
+  .nav-item.active { background: linear-gradient(135deg,rgba(108,142,247,0.15),rgba(167,139,250,0.10)); color: var(--accent); }
+  .nav-icon { font-size: 16px; width: 20px; text-align: center; flex-shrink: 0; }
+  .nav-label { transition: opacity 0.2s; }
+  #sidebar.collapsed .nav-label { opacity: 0; pointer-events: none; width: 0; }
+  .sidebar-bottom {
+    border-top: 1px solid var(--border);
+    padding: 8px;
+  }
+  .sidebar-footer {
+    padding: 10px 14px 12px;
+    border-top: 1px solid var(--border);
+    font-size: 10.5px;
+    color: var(--text3);
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  #sidebar.collapsed .sidebar-footer { opacity: 0; pointer-events: none; }
+  .sidebar-footer button {
+    background: none; border: none; padding: 0; margin: 0;
+    color: var(--text3); font-size: 10.5px; cursor: pointer;
+    text-decoration: underline dotted; text-underline-offset: 2px;
+    transition: color var(--transition);
+  }
+  .sidebar-footer button:hover { color: var(--accent); }
+  .collapse-btn {
+    display: flex; align-items: center; justify-content: center;
+    width: 100%; padding: 8px; border-radius: var(--radius);
+    border: none; background: none; color: var(--text3);
+    cursor: pointer; font-size: 16px;
+    transition: all var(--transition);
+  }
+  .collapse-btn:hover { background: var(--bg3); color: var(--text); }
+  #main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 28px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg2);
+    position: sticky; top: 0; z-index: 50;
+  }
+  .topbar-title-wrap { display: flex; align-items: center; gap: 10px; }
+  .topbar-title { font-size: 16px; font-weight: 600; letter-spacing: -0.3px; }
+  .author-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 700;
+    background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(167,139,250,0.18));
+    color: var(--accent4); border: 1px solid rgba(245,158,11,0.35);
+    cursor: pointer;
+    user-select: none;
+  }
+  .viewer-badge {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 10px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+    background: var(--bg3); color: var(--text3);
+    border: 1px solid var(--border);
+    cursor: pointer;
+    user-select: none;
+  }
+  .topbar-actions { display: flex; gap: 8px; align-items: center; }
+  .page-content { padding: 28px; flex: 1; max-width: 1400px; }
+
+  /* ==================== PAGE FOOTER ==================== */
+  .app-footer {
+    padding: 18px 28px 28px;
+    font-size: 11.5px;
+    color: var(--text3);
+    text-align: center;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+  }
+  .app-footer strong { color: var(--text2); font-weight: 600; }
+
+  /* ==================== BUTTONS ==================== */
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 8px 16px; border-radius: var(--radius);
+    border: none; font-size: 13px; font-weight: 500;
+    transition: all var(--transition); cursor: pointer;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+  }
+  .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+  .btn-secondary {
+    background: var(--bg3); color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--bg4); color: var(--text); border-color: var(--border2); }
+  .btn-danger { background: rgba(244,63,94,0.12); color: var(--danger); border: 1px solid rgba(244,63,94,0.2); }
+  .btn-danger:hover { background: rgba(244,63,94,0.22); }
+  .btn-sm { padding: 5px 11px; font-size: 12px; }
+  .btn-icon { padding: 7px; border-radius: var(--radius); border: none; background: var(--bg3); color: var(--text2); font-size: 14px; transition: all var(--transition); }
+  .btn-icon:hover { background: var(--bg4); color: var(--text); }
+  .btn:disabled, .btn-icon:disabled { opacity: 0.4; cursor: not-allowed; pointer-events: none; }
+
+  /* ==================== CARDS ==================== */
+  .card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--card-radius);
+    padding: 20px;
+  }
+  .card-sm { padding: 14px; }
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: 0.6px; }
+  .stat-val { font-size: 28px; font-weight: 700; letter-spacing: -1px; color: var(--text); }
+  .stat-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  /* ==================== GRID LAYOUTS ==================== */
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .grid-auto { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
+  .section { margin-bottom: 28px; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+  .section-title { font-size: 15px; font-weight: 600; color: var(--text); }
+  .section-sub { font-size: 12px; color: var(--text3); margin-top: 2px; }
+
+  /* ==================== HEATMAP ==================== */
+  .heatmap-wrap { overflow-x: auto; padding-bottom: 4px; }
+  .heatmap-grid {
+    display: flex; flex-direction: column; gap: 2px;
+    min-width: fit-content;
+  }
+  .heatmap-row { display: flex; gap: 2px; align-items: center; }
+  .heatmap-label { font-size: 10px; color: var(--text3); width: 24px; flex-shrink: 0; text-align: right; padding-right: 4px; }
+  .heatmap-months { display: flex; gap: 2px; padding-left: 28px; margin-bottom: 2px; }
+  .heatmap-month { font-size: 10px; color: var(--text3); flex: none; }
+  .hc {
+    width: 12px; height: 12px; border-radius: 2px;
+    flex-shrink: 0; transition: transform 0.1s;
+    cursor: pointer; position: relative;
+  }
+  .hc:hover { transform: scale(1.3); z-index: 10; }
+  .hc-empty { background: var(--bg3); }
+  .heatmap-legend { display: flex; align-items: center; gap: 4px; margin-top: 8px; font-size: 11px; color: var(--text3); }
+
+  /* ==================== MODAL ==================== */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000; padding: 20px;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s;
+  }
+  .modal-overlay.open { opacity: 1; pointer-events: all; }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: 18px;
+    width: 100%; max-width: 560px;
+    max-height: 90vh; overflow-y: auto;
+    box-shadow: var(--shadow-lg);
+    transform: scale(0.96) translateY(8px);
+    transition: transform 0.2s;
+  }
+  .modal-overlay.open .modal { transform: scale(1) translateY(0); }
+  .modal-lg { max-width: 760px; }
+  .modal-sm { max-width: 400px; }
+  .modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid var(--border);
+  }
+  .modal-title { font-size: 16px; font-weight: 700; letter-spacing: -0.3px; }
+  .modal-body { padding: 20px 24px; }
+  .modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; gap: 8px; justify-content: flex-end; }
+  .close-btn {
+    width: 30px; height: 30px; border-radius: 50%;
+    border: none; background: var(--bg3); color: var(--text2);
+    font-size: 16px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+  .close-btn:hover { background: var(--bg4); color: var(--text); }
+
+  /* ==================== CHECKIN ==================== */
+  .checkin-dim {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 0; border-bottom: 1px solid var(--border);
+  }
+  .checkin-dim:last-child { border-bottom: none; }
+  .dim-icon-name { display: flex; align-items: center; gap: 8px; min-width: 140px; }
+  .dim-icon { font-size: 18px; }
+  .dim-name { font-size: 14px; font-weight: 500; }
+  .star-group { display: flex; gap: 4px; }
+  .star-btn {
+    width: 34px; height: 34px; border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--bg3); color: var(--text2);
+    font-size: 13px; font-weight: 600;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+  .star-btn:hover { border-color: var(--accent); background: rgba(108,142,247,0.1); color: var(--accent); }
+  .star-btn.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .checkin-note { width: 100%; margin-top: 8px; }
+
+  /* ==================== FORMS ==================== */
+  .form-group { margin-bottom: 16px; }
+  .form-label { display: block; font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+  .form-input {
+    width: 100%; padding: 10px 12px;
+    background: var(--bg3); border: 1px solid var(--border);
+    border-radius: var(--radius); color: var(--text);
+    font-size: 14px; transition: border-color var(--transition);
+    outline: none;
+  }
+  .form-input:focus { border-color: var(--accent); }
+  textarea.form-input { resize: vertical; min-height: 80px; }
+  .form-row { display: flex; gap: 10px; }
+  .form-row > * { flex: 1; }
+  .form-hint { font-size: 11.5px; color: var(--text3); margin-top: 6px; }
+  .form-error { font-size: 12px; color: var(--danger); margin-top: 6px; min-height: 16px; }
+
+  /* ==================== BADGES & CHIPS ==================== */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 3px 8px; border-radius: 20px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-accent { background: rgba(108,142,247,0.15); color: var(--accent); }
+  .badge-success { background: rgba(52,211,153,0.15); color: var(--accent3); }
+  .badge-warn { background: rgba(245,158,11,0.15); color: var(--accent4); }
+  .badge-danger { background: rgba(244,63,94,0.15); color: var(--danger); }
+
+  /* ==================== PROGRESS ==================== */
+  .progress-bar { height: 6px; background: var(--bg3); border-radius: 3px; overflow: hidden; }
+  .progress-fill { height: 100%; border-radius: 3px; transition: width 0.5s ease; }
+
+  /* ==================== TOOLTIP ==================== */
+  .tooltip { position: relative; }
+  .tooltip-content {
+    position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%);
+    background: var(--bg4); border: 1px solid var(--border2);
+    color: var(--text); font-size: 11px; padding: 4px 8px;
+    border-radius: 5px; white-space: nowrap; pointer-events: none;
+    opacity: 0; transition: opacity 0.15s; z-index: 100;
+    box-shadow: var(--shadow);
+  }
+  .tooltip:hover .tooltip-content { opacity: 1; }
+
+  /* ==================== TABS ==================== */
+  .tabs { display: flex; gap: 2px; background: var(--bg3); padding: 3px; border-radius: var(--radius); border: 1px solid var(--border); }
+  .tab {
+    flex: 1; padding: 7px 14px; border-radius: calc(var(--radius) - 2px);
+    border: none; background: transparent; color: var(--text2);
+    font-size: 13px; font-weight: 500; cursor: pointer; transition: all var(--transition);
+    text-align: center;
+  }
+  .tab.active { background: var(--bg2); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.2); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* ==================== RATING DISPLAY ==================== */
+  .rating-dots { display: flex; gap: 3px; align-items: center; }
+  .rating-dot { width: 8px; height: 8px; border-radius: 50%; }
+
+  /* ==================== DNA GRID ==================== */
+  .dna-grid { display: flex; flex-wrap: wrap; gap: 3px; }
+  .dna-cell {
+    width: 20px; height: 20px; border-radius: 4px;
+    cursor: pointer; transition: transform 0.1s;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px;
+    position: relative;
+  }
+  .dna-cell:hover { transform: scale(1.4); z-index: 5; }
+
+  /* ==================== CALENDAR ==================== */
+  .calendar-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 4px; }
+  .cal-day-header { text-align: center; font-size: 11px; font-weight: 600; color: var(--text3); padding: 6px 0; }
+  .cal-day {
+    aspect-ratio: 1; border-radius: var(--radius);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; border: 1px solid transparent;
+    transition: all var(--transition); font-size: 12px; position: relative;
+  }
+  .cal-day:hover { border-color: var(--border2); background: var(--bg3); }
+  .cal-day.has-data { font-weight: 600; }
+  .cal-day.today { border-color: var(--accent); }
+  .cal-day.selected { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .cal-day.other-month { opacity: 0.35; }
+  .cal-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 2px; }
+
+  /* ==================== SEARCH ==================== */
+  .search-input-wrap { position: relative; }
+  .search-icon { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text3); font-size: 14px; pointer-events: none; }
+  .search-input-wrap .form-input { padding-left: 32px; }
+  .search-result { padding: 10px 14px; border-radius: var(--radius); cursor: pointer; transition: background var(--transition); }
+  .search-result:hover { background: var(--bg3); }
+  .search-result-date { font-size: 11px; color: var(--text3); }
+  .search-result-text { font-size: 13px; color: var(--text); margin-top: 2px; }
+
+  /* ==================== ANALYTICS ==================== */
+  .analytics-row { display: flex; gap: 10px; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--border); }
+  .analytics-row:last-child { border-bottom: none; }
+  .analytics-label { flex: 1; font-size: 13px; color: var(--text); }
+  .analytics-val { font-size: 13px; font-weight: 600; color: var(--accent); }
+
+  /* ==================== BAR CHART ==================== */
+  .bar-chart { display: flex; flex-direction: column; gap: 10px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; }
+  .bar-label { width: 100px; font-size: 12px; color: var(--text2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 4px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 4px; }
+  .bar-val { font-size: 12px; font-weight: 600; color: var(--text2); width: 30px; text-align: right; }
+
+  /* ==================== DIMENSION SETTINGS ==================== */
+  .dim-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 14px; border-radius: var(--radius);
+    background: var(--bg3); border: 1px solid var(--border);
+    margin-bottom: 8px; cursor: grab;
+  }
+  .dim-item:active { cursor: grabbing; }
+  .dim-item.locked { cursor: default; opacity: 0.85; }
+  .dim-drag { color: var(--text3); font-size: 14px; cursor: grab; }
+  .dim-color-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .dim-info { flex: 1; }
+  .dim-info-name { font-size: 13px; font-weight: 500; }
+  .dim-item-actions { display: flex; gap: 4px; }
+
+  /* ==================== NOTIFICATION ==================== */
+  .toast {
+    position: fixed; bottom: 24px; right: 24px;
+    background: var(--bg4); border: 1px solid var(--border2);
+    color: var(--text); padding: 12px 18px;
+    border-radius: var(--card-radius); box-shadow: var(--shadow-lg);
+    font-size: 13px; font-weight: 500; z-index: 9999;
+    transform: translateY(60px); opacity: 0;
+    transition: all 0.3s; max-width: 300px;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ==================== SCORE RING ==================== */
+  .score-ring-wrap { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .score-ring svg { overflow: visible; }
+
+  /* ==================== PILL NAV (mobile-like year select) ==================== */
+  .pill-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill {
+    padding: 5px 14px; border-radius: 20px;
+    border: 1px solid var(--border);
+    background: var(--bg3); color: var(--text2);
+    font-size: 12px; font-weight: 500; cursor: pointer;
+    transition: all var(--transition);
+  }
+  .pill.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+  .pill:hover:not(.active) { border-color: var(--border2); color: var(--text); }
+
+  /* ==================== ICON PICKER ==================== */
+  .icon-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .icon-option {
+    width: 36px; height: 36px; border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: var(--bg3); font-size: 18px;
+    display: flex; align-items: center; justify-content: center;
+    cursor: pointer; transition: all var(--transition);
+  }
+  .icon-option:hover, .icon-option.selected { border-color: var(--accent); background: rgba(108,142,247,0.12); }
+
+  /* ==================== COLOR PICKER ==================== */
+  .color-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+  .color-option {
+    width: 28px; height: 28px; border-radius: 50%;
+    border: 2px solid transparent; cursor: pointer;
+    transition: transform var(--transition);
+  }
+  .color-option:hover { transform: scale(1.15); }
+  .color-option.selected { border-color: var(--text); transform: scale(1.1); }
+
+  /* ==================== LOADING ==================== */
+  .empty-state { text-align: center; padding: 60px 20px; color: var(--text3); }
+  .empty-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.5; }
+  .empty-title { font-size: 15px; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+  .empty-desc { font-size: 13px; }
+
+  /* ==================== CHECKIN PROGRESS ==================== */
+  .checkin-progress { display: flex; gap: 4px; margin-bottom: 4px; }
+  .checkin-progress-dot { height: 3px; flex: 1; border-radius: 2px; background: var(--bg3); transition: background 0.2s; }
+  .checkin-progress-dot.done { background: var(--accent); }
+
+  /* ==================== MONTH VIEW ==================== */
+  .month-selector { display: flex; align-items: center; gap: 12px; }
+  .month-nav { width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--border); background: var(--bg3); color: var(--text2); cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all var(--transition); }
+  .month-nav:hover { background: var(--bg4); color: var(--text); }
+
+  /* ==================== DETAIL PANEL ==================== */
+  .detail-panel {
+    position: fixed; right: 0; top: 0; bottom: 0;
+    width: 380px; background: var(--bg2);
+    border-left: 1px solid var(--border);
+    box-shadow: -4px 0 32px rgba(0,0,0,0.3);
+    z-index: 200; display: flex; flex-direction: column;
+    transform: translateX(100%); transition: transform 0.25s ease;
+  }
+  .detail-panel.open { transform: translateX(0); }
+  .detail-panel-header { display: flex; align-items: center; justify-content: space-between; padding: 20px; border-bottom: 1px solid var(--border); }
+  .detail-panel-body { flex: 1; overflow-y: auto; padding: 20px; }
+  .detail-rating-row { display: flex; align-items: center; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid var(--border); }
+  .detail-rating-row:last-child { border-bottom: none; }
+
+  /* ==================== TRANSITIONS ==================== */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.3s ease forwards; }
+
+  /* ==================== IMPORT/EXPORT ==================== */
+  .import-zone {
+    border: 2px dashed var(--border2);
+    border-radius: var(--card-radius);
+    padding: 40px; text-align: center;
+    cursor: pointer; transition: all var(--transition);
+    color: var(--text3);
+  }
+  .import-zone:hover, .import-zone.drag { border-color: var(--accent); background: rgba(108,142,247,0.05); color: var(--text2); }
+
+  /* ==================== MINI CHART ==================== */
+  .sparkline { display: flex; align-items: flex-end; gap: 2px; height: 32px; }
+  .spark-bar { flex: 1; border-radius: 2px 2px 0 0; min-height: 3px; transition: height 0.3s; }
+
+  /* ==================== RESPONSIVE ==================== */
+  @media (max-width: 1100px) {
+    .grid-4 { grid-template-columns: repeat(2, 1fr); }
+    .grid-3 { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 720px) {
+    #sidebar { width: 58px; min-width: 58px; }
+    #sidebar .nav-label, #sidebar .logo-text-wrap { opacity: 0; width: 0; pointer-events: none; }
+    .page-content { padding: 16px; }
+    .topbar { padding: 12px 16px; }
+    .grid-4, .grid-3, .grid-2 { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body class="theme-dark">
+
+<div id="app">
+  <!-- SIDEBAR -->
+  <nav id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-icon">🪟</div>
+      <div class="logo-text-wrap">
+        <span class="logo-text">Life Mosaic</span>
+        <span class="logo-sub">Created by Vishen</span>
+      </div>
+    </div>
+    <div class="sidebar-nav">
+      <button class="nav-item active" data-view="dashboard">
+        <span class="nav-icon">⬛</span>
+        <span class="nav-label">Dashboard</span>
+      </button>
+      <button class="nav-item" data-view="heatmaps">
+        <span class="nav-icon">🔥</span>
+        <span class="nav-label">Heatmaps</span>
+      </button>
+      <button class="nav-item" data-view="dna">
+        <span class="nav-icon">🧬</span>
+        <span class="nav-label">Life DNA</span>
+      </button>
+      <button class="nav-item" data-view="calendar">
+        <span class="nav-icon">📅</span>
+        <span class="nav-label">Calendar</span>
+      </button>
+      <button class="nav-item" data-view="analytics">
+        <span class="nav-icon">📊</span>
+        <span class="nav-label">Analytics</span>
+      </button>
+      <button class="nav-item" data-view="reports">
+        <span class="nav-icon">📋</span>
+        <span class="nav-label">Reports</span>
+      </button>
+      <button class="nav-item" data-view="search">
+        <span class="nav-icon">🔍</span>
+        <span class="nav-label">Search</span>
+      </button>
+      <button class="nav-item" data-view="settings">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-label">Settings</span>
+      </button>
+    </div>
+    <div class="sidebar-footer">
+      Life Mosaic © 2026<br>
+      Created by <strong style="color:var(--text2);">Vishen</strong><br>
+      <button id="sidebarAuthorLink">All Rights Reserved</button>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="collapse-btn" id="collapseBtn" title="Toggle sidebar">◀</button>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main id="main">
+    <div class="topbar">
+      <div class="topbar-title-wrap">
+        <span class="topbar-title" id="topbarTitle">Dashboard</span>
+        <span id="authorModeBadge" class="author-badge" style="display:none;" title="Click to sign out of Author Mode">👑 Author Mode</span>
+        <span id="viewerModeBadge" class="viewer-badge" title="Click to sign in as the author">👁️ Viewer</span>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-secondary btn-sm" id="themeBtn">🌙 Dark</button>
+        <button class="btn btn-primary btn-sm" id="checkinBtn">✍️ Check In</button>
+      </div>
+    </div>
+
+    <div class="page-content">
+
+      <!-- DASHBOARD VIEW -->
+      <div class="view active" id="view-dashboard">
+        <div class="section fade-in">
+          <div class="grid-4" id="statsGrid"></div>
+        </div>
+        <div class="section fade-in" style="animation-delay:0.05s">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Master Life Heatmap</div>
+              <div class="section-sub">Daily average across all dimensions</div>
+            </div>
+            <div class="pill-nav" id="yearPills"></div>
+          </div>
+          <div class="card">
+            <div class="heatmap-wrap" id="masterHeatmap"></div>
+            <div class="heatmap-legend" id="masterLegend"></div>
+          </div>
+        </div>
+        <div class="section fade-in" style="animation-delay:0.1s">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Dimension Averages</div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="bar-chart" id="dimAverages"></div>
+          </div>
+        </div>
+        <div class="section fade-in" style="animation-delay:0.15s">
+          <div class="section-header">
+            <div class="section-title">Monthly Overview</div>
+          </div>
+          <div class="card">
+            <div id="monthlyOverview"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- HEATMAPS VIEW -->
+      <div class="view" id="view-heatmaps">
+        <div class="section-header section">
+          <div class="section-title">Dimension Heatmaps</div>
+          <div class="pill-nav" id="heatmapYearPills"></div>
+        </div>
+        <div id="heatmapsContainer"></div>
+      </div>
+
+      <!-- DNA VIEW -->
+      <div class="view" id="view-dna">
+        <div class="section">
+          <div class="section-header">
+            <div>
+              <div class="section-title">Life DNA</div>
+              <div class="section-sub">Each cell shows the dominant dimension of that day</div>
+            </div>
+            <div class="pill-nav" id="dnaYearPills"></div>
+          </div>
+          <div class="card">
+            <div id="dnaLegend" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:16px;"></div>
+            <div id="dnaGrid" class="dna-grid"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- CALENDAR VIEW -->
+      <div class="view" id="view-calendar">
+        <div class="section">
+          <div class="section-header">
+            <div class="month-selector">
+              <button class="month-nav" id="calPrev">&#8249;</button>
+              <span id="calMonthLabel" style="font-size:15px;font-weight:600;min-width:130px;text-align:center;"></span>
+              <button class="month-nav" id="calNext">&#8250;</button>
+            </div>
+            <button class="btn btn-secondary btn-sm" id="calToday">Today</button>
+          </div>
+          <div class="grid-2" style="gap:20px;align-items:start">
+            <div class="card">
+              <div class="calendar-grid" id="calGrid"></div>
+            </div>
+            <div class="card" id="calDayDetail">
+              <div class="empty-state">
+                <div class="empty-icon">📅</div>
+                <div class="empty-title">Select a day</div>
+                <div class="empty-desc">Click any day to see details</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ANALYTICS VIEW -->
+      <div class="view" id="view-analytics">
+        <div class="grid-2" style="margin-bottom:20px;" id="analyticsTop"></div>
+        <div class="section">
+          <div class="section-title" style="margin-bottom:14px;">Dimension Rankings</div>
+          <div class="card">
+            <div id="dimRankings"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-title" style="margin-bottom:14px;">Top & Bottom Days</div>
+          <div class="grid-2" id="topBottomDays"></div>
+        </div>
+      </div>
+
+      <!-- REPORTS VIEW -->
+      <div class="view" id="view-reports">
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Monthly Reports</div>
+            <div class="month-selector">
+              <button class="month-nav" id="repPrev">&#8249;</button>
+              <span id="repMonthLabel" style="font-size:14px;font-weight:600;min-width:130px;text-align:center;"></span>
+              <button class="month-nav" id="repNext">&#8250;</button>
+            </div>
+          </div>
+          <div id="monthReport"></div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <div class="section-title">Annual Review</div>
+            <div class="pill-nav" id="yearReportPills"></div>
+          </div>
+          <div id="yearReport"></div>
+        </div>
+      </div>
+
+      <!-- SEARCH VIEW -->
+      <div class="view" id="view-search">
+        <div class="section">
+          <div class="search-input-wrap" style="margin-bottom:16px;">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="form-input" id="searchInput" placeholder="Search notes, dates, dimensions...">
+          </div>
+          <div id="searchResults"></div>
+        </div>
+      </div>
+
+      <!-- SETTINGS VIEW -->
+      <div class="view" id="view-settings">
+        <div class="card" id="viewerNotice" style="display:none;margin-bottom:20px;border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.06);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:20px;">🔒</span>
+            <div>
+              <div style="font-size:13px;font-weight:600;">Viewing as a visitor</div>
+              <div style="font-size:12px;color:var(--text2);margin-top:2px;">Dimensions, theme structure, and data import/export are locked to the author. You can still browse everything else. <button id="settingsAuthorLink" style="background:none;border:none;color:var(--accent);cursor:pointer;text-decoration:underline;padding:0;font-size:12px;">Sign in as Vishen</button></div>
+            </div>
+          </div>
+        </div>
+        <div class="grid-2" style="gap:20px;align-items:start">
+          <div>
+            <div class="section">
+              <div class="section-header">
+                <div class="section-title">Dimensions</div>
+                <button class="btn btn-primary btn-sm" id="addDimBtn">+ Add</button>
+              </div>
+              <div id="dimList"></div>
+            </div>
+          </div>
+          <div>
+            <div class="section">
+              <div class="section-title" style="margin-bottom:14px;">Appearance</div>
+              <div class="card" style="margin-bottom:16px;">
+                <div class="form-group">
+                  <label class="form-label">Theme</label>
+                  <div class="tabs" style="max-width:260px;" id="themeTabs">
+                    <button class="tab" data-theme="dark">🌙 Dark</button>
+                    <button class="tab active" data-theme="light">☀️ Light</button>
+                    <button class="tab" data-theme="oled">⚫ OLED</button>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label class="form-label">Heatmap Palette</label>
+                  <div class="tabs" id="paletteTabs" style="max-width:300px;">
+                    <button class="tab active" data-palette="blue">Blue</button>
+                    <button class="tab" data-palette="green">Green</button>
+                    <button class="tab" data-palette="purple">Purple</button>
+                    <button class="tab" data-palette="orange">Orange</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="section">
+              <div class="section-title" style="margin-bottom:14px;">Data <span id="dataAuthorOnlyTag" class="badge badge-warn" style="margin-left:6px;">Author Only</span></div>
+              <div class="card">
+                <div style="display:flex;flex-direction:column;gap:10px;">
+                  <button class="btn btn-secondary" id="exportBtn">📤 Export JSON</button>
+                  <button class="btn btn-secondary" id="importBtn">📥 Import JSON</button>
+                  <button class="btn btn-danger" id="clearDataBtn">🗑️ Clear All Data</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- page-content -->
+
+    <div class="app-footer">
+      <strong>Life Mosaic</strong> © 2026 Created by <strong>Vishen</strong> · All Rights Reserved
+    </div>
+  </main>
+</div><!-- #app -->
+
+<!-- DETAIL PANEL -->
+<div class="detail-panel" id="detailPanel">
+  <div class="detail-panel-header">
+    <div>
+      <div style="font-size:13px;color:var(--text3);" id="detailDate"></div>
+      <div style="font-size:16px;font-weight:700;" id="detailTitle"></div>
+    </div>
+    <div style="display:flex;gap:8px;">
+      <button class="btn btn-secondary btn-sm" id="detailEditBtn">Edit</button>
+      <button class="close-btn" id="closeDetail">✕</button>
+    </div>
+  </div>
+  <div class="detail-panel-body" id="detailBody"></div>
+</div>
+
+<!-- CHECK IN MODAL -->
+<div class="modal-overlay" id="checkinOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <div class="modal-title">Daily Check-In</div>
+        <div style="font-size:12px;color:var(--text3);margin-top:2px;" id="checkinDate"></div>
+      </div>
+      <button class="close-btn" id="closeCheckin">✕</button>
+    </div>
+    <div class="modal-body" id="checkinBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="skipCheckin">Skip</button>
+      <button class="btn btn-primary" id="saveCheckin">Save Check-In</button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD/EDIT DIMENSION MODAL -->
+<div class="modal-overlay" id="dimModalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title" id="dimModalTitle">Add Dimension</div>
+      <button class="close-btn" id="closeDimModal">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Name</label>
+        <input type="text" class="form-input" id="dimNameInput" placeholder="e.g. Fitness">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Icon</label>
+        <div class="icon-grid" id="iconGrid"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Color</label>
+        <div class="color-grid" id="colorGrid"></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelDimModal">Cancel</button>
+      <button class="btn btn-primary" id="saveDimModal">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT DAY MODAL -->
+<div class="modal-overlay" id="editDayOverlay">
+  <div class="modal modal-lg">
+    <div class="modal-header">
+      <div class="modal-title" id="editDayTitle">Edit Day</div>
+      <button class="close-btn" id="closeEditDay">✕</button>
+    </div>
+    <div class="modal-body" id="editDayBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelEditDay">Cancel</button>
+      <button class="btn btn-primary" id="saveEditDay">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMPORT MODAL -->
+<div class="modal-overlay" id="importOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">Import Data</div>
+      <button class="close-btn" id="closeImport">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="import-zone" id="importZone">
+        <div style="font-size:32px;margin-bottom:8px;">📥</div>
+        <div style="font-size:14px;font-weight:500;">Drop JSON file here or click to browse</div>
+        <div style="font-size:12px;margin-top:4px;">Exported Life Mosaic JSON files only</div>
+      </div>
+      <input type="file" id="importFile" accept=".json" style="display:none">
+      <div style="margin-top:12px;">
+        <label class="form-label">Or paste JSON</label>
+        <textarea class="form-input" id="importText" placeholder='{"entries":{},"dimensions":[],...}' style="height:100px;"></textarea>
+      </div>
+      <div id="importStatus" style="margin-top:8px;font-size:13px;"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelImport">Cancel</button>
+      <button class="btn btn-primary" id="confirmImport">Import</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTHOR LOGIN MODAL -->
+<div class="modal-overlay" id="authorLoginOverlay">
+  <div class="modal modal-sm">
+    <div class="modal-header">
+      <div class="modal-title">👑 Author Sign-In</div>
+      <button class="close-btn" id="closeAuthorLogin">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="form-group">
+        <label class="form-label">Password</label>
+        <input type="password" class="form-input" id="authorPasswordInput" placeholder="Enter author password" autocomplete="current-password">
+        <div class="form-error" id="authorLoginError"></div>
+      </div>
+      <div class="form-hint">
+        This unlocks editing for dimensions, day entries, and data import/export on this device. It's a light client-side lock meant to stop casual edits 
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="cancelAuthorLogin">Cancel</button>
+      <button class="btn btn-primary" id="confirmAuthorLogin">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ==================== AUTHOR SYSTEM ====================
+// See the file header comment for an honest note on what this protects
+// (casual edits) and what it does NOT protect (a motivated attacker
+// can read AUTHOR_PASSWORD directly from this source file).
+const AUTHOR_NAME = "Vishen";
+const AUTHOR_PASSWORD = "Vishen@01"; // <-- change this before you publish the file
+let AUTHOR_MODE = false;
+
+function isAuthor() { return AUTHOR_MODE === true; }
+
+function requireAuthor(actionLabel) {
+  if (isAuthor()) return true;
+  toast(`🔒 Editing restricted to the author${actionLabel ? ' — ' + actionLabel : ''}.`);
+  return false;
+}
+
+function tryAuthorLogin(password) {
+  if (password === AUTHOR_PASSWORD) {
+    AUTHOR_MODE = true;
+    try { localStorage.setItem('lifemosaic_author', 'true'); } catch(e) {}
+    updateAuthorUI();
+    toast('👑 Author Mode enabled');
+    return true;
+  }
+  return false;
+}
+
+function authorLogout() {
+  AUTHOR_MODE = false;
+  try { localStorage.removeItem('lifemosaic_author'); } catch(e) {}
+  updateAuthorUI();
+  toast('Signed out of Author Mode');
+}
+
+function restoreAuthorSession() {
+  try {
+    if (localStorage.getItem('lifemosaic_author') === 'true') AUTHOR_MODE = true;
+  } catch(e) {}
+  updateAuthorUI();
+}
+
+function updateAuthorUI() {
+  const authorBadge = document.getElementById('authorModeBadge');
+  const viewerBadge = document.getElementById('viewerModeBadge');
+  const viewerNotice = document.getElementById('viewerNotice');
+  const dataOnlyTag = document.getElementById('dataAuthorOnlyTag');
+
+  if (authorBadge) authorBadge.style.display = isAuthor() ? 'inline-flex' : 'none';
+  if (viewerBadge) viewerBadge.style.display = isAuthor() ? 'none' : 'inline-flex';
+  if (viewerNotice) viewerNotice.style.display = isAuthor() ? 'none' : 'block';
+  if (dataOnlyTag) dataOnlyTag.style.display = isAuthor() ? 'none' : 'inline-flex';
+
+  // Lock / unlock structural controls. Day check-ins stay open to everyone
+  // (it's a personal reflection tool), but structural edits are author-only.
+  const lockIds = ['addDimBtn','importBtn','clearDataBtn'];
+  lockIds.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.disabled = !isAuthor();
+  });
+  const exportBtn = document.getElementById('exportBtn');
+  if (exportBtn) exportBtn.disabled = false; // exporting your own view is always allowed
+
+  renderDimList();
+}
+
+function openAuthorLogin() {
+  const overlay = document.getElementById('authorLoginOverlay');
+  const input = document.getElementById('authorPasswordInput');
+  const err = document.getElementById('authorLoginError');
+  if (err) err.textContent = '';
+  if (input) input.value = '';
+  overlay.classList.add('open');
+  setTimeout(() => input && input.focus(), 50);
+}
+
+// ==================== CONSTANTS ====================
+const ICONS = ['💻','📚','🏃','❤️','😴','📱','🎨','💰','🤝','🧘','🍎','✍️','🎵','🌿','🎯','🔬','🏋️','🎮','🌍','☀️','🌙','🔥','💡','📷','🎭','🧠','🚀','⚡','🏠','🐾'];
+const COLORS = ['#6c8ef7','#a78bfa','#34d399','#f59e0b','#f43f5e','#06b6d4','#ec4899','#84cc16','#fb923c','#8b5cf6','#14b8a6','#ef4444','#3b82f6','#22c55e','#eab308','#e879f9','#f97316','#0ea5e9'];
+const DEFAULT_DIMS = [
+  {id:'d1',name:'Coding',icon:'💻',color:'#6c8ef7'},
+  {id:'d2',name:'Study',icon:'📚',color:'#a78bfa'},
+  {id:'d3',name:'Fitness',icon:'🏃',color:'#34d399'},
+  {id:'d4',name:'Relationship',icon:'❤️',color:'#f43f5e'},
+  {id:'d5',name:'Sleep',icon:'😴',color:'#06b6d4'},
+  {id:'d6',name:'Phone Usage',icon:'📱',color:'#f59e0b'},
+  {id:'d7',name:'Mood',icon:'😊',color:'#fb923c'},
+  {id:'d8',name:'Finances',icon:'💰',color:'#84cc16'},
+  {id:'d9',name:'Creativity',icon:'🎨',color:'#ec4899'},
+  {id:'d10',name:'Social Life',icon:'🤝',color:'#8b5cf6'},
+];
+const PALETTES = {
+  blue: ['#1e2a45','#2a3f6e','#3d5fa0','#5882d6','#6c8ef7','#93aeff'],
+  green: ['#142a1e','#1e4230','#2d6b4a','#3d9669','#34d399','#6fe8bc'],
+  purple: ['#231838','#392660','#5b3f92','#7c5abf','#a78bfa','#c4adff'],
+  orange: ['#2a1a0a','#4a2e10','#7d4a18','#b86d20','#f59e0b','#fbc34a'],
+};
+const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTH_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+const DAYS_SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+// ==================== STATE ====================
+let state = {
+  entries: {},    // { 'YYYY-MM-DD': { ratings: {dimId: 1-5}, note: '' } }
+  dimensions: [],
+  settings: {
+    theme: 'dark',
+    palette: 'blue',
+    checkedToday: false,
+    lastCheckinDate: null,
+  },
+  ui: {
+    currentView: 'dashboard',
+    selectedYear: new Date().getFullYear(),
+    calYear: new Date().getFullYear(),
+    calMonth: new Date().getMonth(),
+    repYear: new Date().getFullYear(),
+    repMonth: new Date().getMonth(),
+    selectedDay: null,
+    sidebarCollapsed: false,
+  },
+  editDimId: null,
+  editDimData: {name:'', icon: ICONS[0], color: COLORS[0]},
+  editDayDate: null,
+  editDayData: {},
+};
+
+// ==================== STORAGE ====================
+function save() {
+  try {
+    localStorage.setItem('lifemosaic_entries', JSON.stringify(state.entries));
+    localStorage.setItem('lifemosaic_dims', JSON.stringify(state.dimensions));
+    localStorage.setItem('lifemosaic_settings', JSON.stringify(state.settings));
+    localStorage.setItem('lifemosaic_ui_prefs', JSON.stringify({
+      theme: state.settings.theme,
+      palette: state.settings.palette,
+      sidebarCollapsed: state.ui.sidebarCollapsed
+    }));
+  } catch(e) { console.warn('Storage error', e); }
+}
+function load() {
+  try {
+    const entries = localStorage.getItem('lifemosaic_entries');
+    const dims = localStorage.getItem('lifemosaic_dims');
+    const settings = localStorage.getItem('lifemosaic_settings');
+    const prefs = localStorage.getItem('lifemosaic_ui_prefs');
+    if (entries) state.entries = JSON.parse(entries);
+    if (dims) state.dimensions = JSON.parse(dims);
+    else { state.dimensions = DEFAULT_DIMS.map(d => ({...d})); save(); }
+    if (settings) state.settings = { ...state.settings, ...JSON.parse(settings) };
+    if (prefs) {
+      const p = JSON.parse(prefs);
+      state.settings.theme = p.theme || 'dark';
+      state.settings.palette = p.palette || 'blue';
+      state.ui.sidebarCollapsed = p.sidebarCollapsed || false;
+    }
+  } catch(e) {
+    state.dimensions = DEFAULT_DIMS.map(d => ({...d}));
+  }
+}
+
+// ==================== UTILS ====================
+function dateKey(date) {
+  const d = date instanceof Date ? date : new Date(date);
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function todayKey() { return dateKey(new Date()); }
+function parseKey(k) {
+  const [y,m,d] = k.split('-').map(Number);
+  return new Date(y, m-1, d);
+}
+function formatDate(k) {
+  const d = parseKey(k);
+  return d.toLocaleDateString('en-US', {weekday:'short', year:'numeric', month:'short', day:'numeric'});
+}
+function avgEntry(entry) {
+  if (!entry || !entry.ratings) return 0;
+  const vals = Object.values(entry.ratings).filter(v => v > 0);
+  return vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : 0;
+}
+function dominantDim(entry) {
+  if (!entry || !entry.ratings) return null;
+  let best = null, bestVal = 0;
+  for (const [id, val] of Object.entries(entry.ratings)) {
+    if (val > bestVal) { bestVal = val; best = id; }
+  }
+  return best;
+}
+function getDim(id) { return state.dimensions.find(d => d.id === id); }
+function uid() { return 'd' + Date.now() + Math.random().toString(36).slice(2,6); }
+function clamp(v,a,b) { return Math.min(Math.max(v,a),b); }
+function lerp(a,b,t) { return a + (b-a)*t; }
+function toast(msg, dur=2800) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ==================== HEATMAP UTILS ====================
+function getPaletteColors() {
+  return PALETTES[state.settings.palette] || PALETTES.blue;
+}
+function heatColor(val, customColor) {
+  if (!val || val === 0) return 'var(--bg3)';
+  const p = getPaletteColors();
+  if (customColor) {
+    const hex = customColor;
+    const alpha = 0.12 + (val/5)*0.88;
+    return hexAlpha(hex, alpha);
+  }
+  const idx = Math.round((val-1) / 4 * (p.length-1));
+  return p[clamp(idx,0,p.length-1)];
+}
+function hexAlpha(hex, a) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// ==================== YEAR GRID ====================
+function buildYearGrid(year, valFn, colorFn, tooltipFn) {
+  const jan1 = new Date(year, 0, 1);
+  const dec31 = new Date(year, 11, 31);
+  const startPad = jan1.getDay(); // 0=Sun
+  const totalCells = startPad + 366;
+  const weeks = Math.ceil(totalCells / 7);
+
+  const rows = document.createElement('div');
+  rows.style.cssText = 'display:flex;gap:3px;';
+
+  // Day labels col
+  const dayLabels = document.createElement('div');
+  dayLabels.style.cssText = 'display:flex;flex-direction:column;gap:2px;padding-top:0px;';
+  const dayNames = ['','Mon','','Wed','','Fri',''];
+  dayNames.forEach(d => {
+    const lbl = document.createElement('div');
+    lbl.style.cssText = 'font-size:9px;color:var(--text3);height:13px;line-height:13px;width:24px;text-align:right;padding-right:3px;';
+    lbl.textContent = d;
+    dayLabels.appendChild(lbl);
+  });
+  rows.appendChild(dayLabels);
+
+  let monthLabels = [];
+  let lastMonth = -1;
+
+  for (let w = 0; w < weeks; w++) {
+    const col = document.createElement('div');
+    col.style.cssText = 'display:flex;flex-direction:column;gap:2px;';
+
+    for (let d = 0; d < 7; d++) {
+      const dayIndex = w * 7 + d - startPad;
+      const cell = document.createElement('div');
+      cell.style.cssText = 'width:13px;height:13px;border-radius:2px;cursor:pointer;transition:transform 0.1s;position:relative;flex-shrink:0;';
+
+      if (dayIndex < 0 || dayIndex > 365) {
+        cell.style.background = 'transparent';
+        cell.style.cursor = 'default';
+      } else {
+        const date = new Date(year, 0, dayIndex + 1);
+        if (date > dec31) {
+          cell.style.background = 'transparent';
+        } else {
+          const dk = dateKey(date);
+          const val = valFn(dk);
+          const color = colorFn(dk, val);
+          cell.style.background = color;
+          const tip = tooltipFn(dk, date, val);
+          if (tip) {
+            cell.title = tip;
+            cell.style.cursor = 'pointer';
+            cell.addEventListener('mouseenter', function(e) {
+              this.style.transform = 'scale(1.4)';
+              this.style.zIndex = '10';
+            });
+            cell.addEventListener('mouseleave', function(e) {
+              this.style.transform = '';
+              this.style.zIndex = '';
+            });
+            cell.addEventListener('click', () => openDay(dk));
+          }
+          if (date.getMonth() !== lastMonth && d === 0) {
+            monthLabels.push({ week: w, month: date.getMonth() });
+            lastMonth = date.getMonth();
+          }
+        }
+      }
+      col.appendChild(cell);
+    }
+    rows.appendChild(col);
+  }
+
+  const container = document.createElement('div');
+  container.style.cssText = 'position:relative;';
+  const mlRowAbsolute = document.createElement('div');
+  mlRowAbsolute.style.cssText = 'position:relative;height:16px;margin-bottom:2px;';
+  monthLabels.forEach(ml => {
+    const span = document.createElement('span');
+    span.textContent = MONTHS[ml.month];
+    span.style.cssText = `font-size:10px;color:var(--text3);position:absolute;left:${28 + ml.week * 16}px;`;
+    mlRowAbsolute.appendChild(span);
+  });
+  container.appendChild(mlRowAbsolute);
+  container.appendChild(rows);
+  return container;
+}
+
+function buildLegend(customColor) {
+  const p = getPaletteColors();
+  const legend = document.createElement('div');
+  legend.className = 'heatmap-legend';
+  const less = document.createElement('span');
+  less.textContent = 'Less';
+  legend.appendChild(less);
+  for (let i = 0; i <= 4; i++) {
+    const box = document.createElement('div');
+    box.style.cssText = `width:12px;height:12px;border-radius:2px;`;
+    if (i === 0) box.style.background = 'var(--bg3)';
+    else {
+      const val = i;
+      box.style.background = customColor ? hexAlpha(customColor, 0.12 + (val/4)*0.88) : (p[Math.round((i-1)/3*(p.length-1))] || p[p.length-1]);
+    }
+    legend.appendChild(box);
+  }
+  const more = document.createElement('span');
+  more.textContent = 'More';
+  legend.appendChild(more);
+  return legend;
+}
+
+// ==================== RENDER FUNCTIONS ====================
+
+function renderStats() {
+  const el = document.getElementById('statsGrid');
+  if (!el) return;
+  const today = todayKey();
+  const entries = Object.entries(state.entries).sort(([a],[b]) => a.localeCompare(b));
+  const totalDays = entries.length;
+  const year = state.ui.selectedYear;
+
+  let streak = 0, d = new Date();
+  d.setDate(d.getDate()-1);
+  while (true) {
+    const k = dateKey(d);
+    if (state.entries[k]) { streak++; d.setDate(d.getDate()-1); }
+    else break;
+    if (streak > 1000) break;
+  }
+  if (state.entries[today]) streak++;
+
+  let longest = 0, cur = 0;
+  if (entries.length) {
+    const keys = entries.map(([k])=>k).sort();
+    cur = 1; longest = 1;
+    for (let i = 1; i < keys.length; i++) {
+      const prev = parseKey(keys[i-1]);
+      const curr = parseKey(keys[i]);
+      const diff = (curr - prev) / 86400000;
+      if (diff === 1) { cur++; longest = Math.max(longest, cur); }
+      else cur = 1;
+    }
+  }
+
+  const yearDays = entries.filter(([k]) => k.startsWith(year)).length;
+  const daysInYear = 365;
+  const yearPct = Math.round(yearDays / daysInYear * 100);
+
+  let totalScore = 0, scoreCount = 0;
+  entries.filter(([k])=>k.startsWith(year)).forEach(([,e]) => {
+    const a = avgEntry(e);
+    if (a > 0) { totalScore += a; scoreCount++; }
+  });
+  const avgScore = scoreCount ? (totalScore/scoreCount).toFixed(1) : '—';
+
+  const stats = [
+    {icon:'⭐', label:'Year Avg Score', val: avgScore, sub:`${year} average`},
+    {icon:'🔥', label:'Current Streak', val: streak + (streak===1?' day':' days'), sub:'Consecutive days'},
+    {icon:'🏆', label:'Longest Streak', val: longest + (longest===1?' day':' days'), sub:'All time best'},
+    {icon:'📅', label:'Days Logged', val: totalDays, sub:`${yearDays} this year`},
+  ];
+
+  el.innerHTML = stats.map(s => `
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">${s.label}</span>
+        <span style="font-size:20px;">${s.icon}</span>
+      </div>
+      <div class="stat-val">${s.val}</div>
+      <div class="stat-sub">${s.sub}</div>
+    </div>
+  `).join('');
+}
+
+function renderYearPills(containerId, callback) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const years = new Set();
+  const now = new Date().getFullYear();
+  years.add(now);
+  Object.keys(state.entries).forEach(k => years.add(parseInt(k.slice(0,4))));
+  const sorted = [...years].sort((a,b)=>b-a);
+  el.innerHTML = sorted.map(y => `
+    <button class="pill${y===state.ui.selectedYear?' active':''}" data-year="${y}">${y}</button>
+  `).join('');
+  el.querySelectorAll('.pill').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.ui.selectedYear = parseInt(btn.dataset.year);
+      el.querySelectorAll('.pill').forEach(b=>b.classList.remove('active'));
+      btn.classList.add('active');
+      if (callback) callback();
+      else renderAll();
+    });
+  });
+}
+
+function renderMasterHeatmap() {
+  const el = document.getElementById('masterHeatmap');
+  const legend = document.getElementById('masterLegend');
+  if (!el) return;
+  const year = state.ui.selectedYear;
+
+  const grid = buildYearGrid(year,
+    dk => {
+      const e = state.entries[dk];
+      return e ? avgEntry(e) : 0;
+    },
+    (dk, val) => heatColor(val),
+    (dk, date, val) => {
+      const e = state.entries[dk];
+      if (!e) return `${formatDate(dk)} — No entry`;
+      const dom = dominantDim(e);
+      const d = dom ? getDim(dom) : null;
+      return `${formatDate(dk)}\nScore: ${avgEntry(e).toFixed(1)}/5${d ? `\nDominant: ${d.icon} ${d.name}` : ''}`;
+    }
+  );
+  el.innerHTML = '';
+  el.appendChild(grid);
+  if (legend) {
+    legend.innerHTML = '';
+    legend.appendChild(buildLegend());
+  }
+}
+
+function renderDimAverages() {
+  const el = document.getElementById('dimAverages');
+  if (!el) return;
+  const year = state.ui.selectedYear;
+  const yearEntries = Object.entries(state.entries).filter(([k]) => k.startsWith(year));
+
+  const dimScores = {};
+  state.dimensions.forEach(d => { dimScores[d.id] = {sum:0, count:0}; });
+  yearEntries.forEach(([, entry]) => {
+    if (!entry.ratings) return;
+    Object.entries(entry.ratings).forEach(([id, val]) => {
+      if (dimScores[id] && val > 0) {
+        dimScores[id].sum += val;
+        dimScores[id].count++;
+      }
+    });
+  });
+
+  const rows = state.dimensions.map(d => {
+    const s = dimScores[d.id];
+    const avg = s.count ? s.sum/s.count : 0;
+    return {d, avg};
+  }).sort((a,b) => b.avg - a.avg);
+
+  el.innerHTML = rows.map(({d, avg}) => `
+    <div class="bar-row">
+      <div class="bar-label">${d.icon} ${d.name}</div>
+      <div class="bar-track">
+        <div class="bar-fill" style="width:${(avg/5)*100}%;background:${d.color};"></div>
+      </div>
+      <div class="bar-val">${avg ? avg.toFixed(1) : '—'}</div>
+    </div>
+  `).join('');
+}
+
+function renderMonthlyOverview() {
+  const el = document.getElementById('monthlyOverview');
+  if (!el) return;
+  const year = state.ui.selectedYear;
+  const monthData = [];
+  for (let m = 0; m < 12; m++) {
+    const monthEntries = Object.entries(state.entries).filter(([k]) => {
+      const d = parseKey(k);
+      return d.getFullYear() === year && d.getMonth() === m;
+    });
+    const avgs = monthEntries.map(([,e]) => avgEntry(e)).filter(v=>v>0);
+    const avg = avgs.length ? avgs.reduce((a,b)=>a+b,0)/avgs.length : 0;
+    monthData.push({ month: m, avg, count: avgs.length });
+  }
+
+  const maxAvg = Math.max(...monthData.map(d=>d.avg), 1);
+  el.innerHTML = `
+    <div style="display:flex;gap:6px;align-items:flex-end;height:80px;">
+      ${monthData.map(({month, avg, count}) => `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;" title="${MONTH_FULL[month]}: ${avg?avg.toFixed(1):'No data'} (${count} days)">
+          <div style="flex:1;display:flex;align-items:flex-end;width:100%;">
+            <div style="width:100%;border-radius:3px 3px 0 0;background:${avg ? heatColor(avg) : 'var(--bg3)'};height:${avg?(avg/maxAvg*60+4):4}px;transition:height 0.5s;"></div>
+          </div>
+          <div style="font-size:9px;color:var(--text3);font-weight:500;">${MONTHS[month]}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+function renderHeatmaps() {
+  const el = document.getElementById('heatmapsContainer');
+  if (!el) return;
+  const year = state.ui.selectedYear;
+  el.innerHTML = '';
+
+  state.dimensions.forEach(dim => {
+    const section = document.createElement('div');
+    section.className = 'section card fade-in';
+    section.style.marginBottom = '16px';
+
+    const header = document.createElement('div');
+    header.className = 'card-header';
+    header.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px;">
+        <span style="font-size:18px;">${dim.icon}</span>
+        <span style="font-size:14px;font-weight:600;">${dim.name}</span>
+      </div>
+    `;
+    section.appendChild(header);
+
+    const wrap = document.createElement('div');
+    wrap.className = 'heatmap-wrap';
+    const grid = buildYearGrid(year,
+      dk => state.entries[dk]?.ratings?.[dim.id] || 0,
+      (dk, val) => heatColor(val, dim.color),
+      (dk, date, val) => `${formatDate(dk)}\n${dim.icon} ${dim.name}: ${val ? val+'/5' : 'No entry'}`
+    );
+    wrap.appendChild(grid);
+    section.appendChild(wrap);
+
+    const legend = document.createElement('div');
+    legend.className = 'heatmap-legend';
+    legend.style.marginTop = '8px';
+    legend.appendChild(buildLegend(dim.color));
+    section.appendChild(legend);
+
+    el.appendChild(section);
+  });
+
+  renderYearPills('heatmapYearPills', renderHeatmaps);
+}
+
+function renderDNA() {
+  const el = document.getElementById('dnaGrid');
+  const legendEl = document.getElementById('dnaLegend');
+  if (!el) return;
+  const year = state.ui.selectedYear;
+
+  if (legendEl) {
+    legendEl.innerHTML = state.dimensions.map(d => `
+      <div style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--text2);">
+        <div style="width:12px;height:12px;border-radius:3px;background:${d.color};flex-shrink:0;"></div>
+        ${d.icon} ${d.name}
+      </div>
+    `).join('');
+  }
+
+  el.innerHTML = '';
+  const jan1 = new Date(year, 0, 1);
+  const dec31 = new Date(year, 11, 31);
+
+  for (let d = new Date(jan1); d <= dec31; d.setDate(d.getDate()+1)) {
+    const dk = dateKey(d);
+    const entry = state.entries[dk];
+    const cell = document.createElement('div');
+    cell.className = 'dna-cell tooltip';
+    cell.style.width = '18px';
+    cell.style.height = '18px';
+
+    if (entry) {
+      const domId = dominantDim(entry);
+      const dim = domId ? getDim(domId) : null;
+      const avg = avgEntry(entry);
+      cell.style.background = dim ? hexAlpha(dim.color, 0.2 + (avg/5)*0.8) : 'var(--bg3)';
+      cell.textContent = dim ? dim.icon : '';
+      cell.style.fontSize = '10px';
+      cell.style.display = 'flex';
+      cell.style.alignItems = 'center';
+      cell.style.justifyContent = 'center';
+      const tip = document.createElement('div');
+      tip.className = 'tooltip-content';
+      tip.textContent = `${formatDate(dk)}${dim ? `\n${dim.icon} ${dim.name} Day` : ''}\nScore: ${avg.toFixed(1)}/5`;
+      tip.style.whiteSpace = 'pre';
+      cell.appendChild(tip);
+    } else {
+      cell.style.background = 'var(--bg3)';
+    }
+    cell.addEventListener('click', () => openDay(dk));
+    el.appendChild(cell);
+  }
+
+  renderYearPills('dnaYearPills', renderDNA);
+}
+
+function renderCalendar() {
+  const grid = document.getElementById('calGrid');
+  const label = document.getElementById('calMonthLabel');
+  if (!grid || !label) return;
+
+  const { calYear, calMonth } = state.ui;
+  label.textContent = `${MONTH_FULL[calMonth]} ${calYear}`;
+
+  grid.innerHTML = '';
+  DAYS_SHORT.forEach(d => {
+    const h = document.createElement('div');
+    h.className = 'cal-day-header';
+    h.textContent = d.slice(0,1);
+    grid.appendChild(h);
+  });
+
+  const first = new Date(calYear, calMonth, 1);
+  const last = new Date(calYear, calMonth+1, 0);
+  const pad = first.getDay();
+  const today = todayKey();
+
+  for (let i = 0; i < pad; i++) {
+    const prev = new Date(calYear, calMonth, -pad+i+1);
+    const cell = document.createElement('div');
+    cell.className = 'cal-day other-month';
+    cell.textContent = prev.getDate();
+    grid.appendChild(cell);
+  }
+
+  for (let d = 1; d <= last.getDate(); d++) {
+    const date = new Date(calYear, calMonth, d);
+    const dk = dateKey(date);
+    const entry = state.entries[dk];
+    const cell = document.createElement('div');
+    cell.className = 'cal-day' + (dk === today ? ' today' : '') + (dk === state.ui.selectedDay ? ' selected' : '');
+    cell.style.flexDirection = 'column';
+    cell.innerHTML = `<span>${d}</span>`;
+    if (entry) {
+      cell.classList.add('has-data');
+      const avg = avgEntry(entry);
+      const domId = dominantDim(entry);
+      const dim = domId ? getDim(domId) : null;
+      const dot = document.createElement('div');
+      dot.className = 'cal-dot';
+      dot.style.background = dim ? dim.color : heatColor(avg);
+      cell.appendChild(dot);
+    }
+    cell.addEventListener('click', () => {
+      state.ui.selectedDay = dk;
+      renderCalendar();
+      renderDayDetail(dk);
+    });
+    grid.appendChild(cell);
+  }
+}
+
+function renderDayDetail(dk) {
+  const el = document.getElementById('calDayDetail');
+  if (!el) return;
+  const entry = state.entries[dk];
+  if (!entry) {
+    el.innerHTML = `
+      <div class="card-header">
+        <span style="font-size:14px;font-weight:600;">${formatDate(dk)}</span>
+        <button class="btn btn-primary btn-sm" onclick="openCheckinForDate('${dk}')">Add Entry</button>
+      </div>
+      <div class="empty-state" style="padding:30px 0;">
+        <div class="empty-icon">📝</div>
+        <div class="empty-title">No entry</div>
+        <div class="empty-desc">Check in for this day</div>
+      </div>
+    `;
+    return;
+  }
+  const avg = avgEntry(entry);
+  const domId = dominantDim(entry);
+  const dom = domId ? getDim(domId) : null;
+  el.innerHTML = `
+    <div class="card-header" style="margin-bottom:12px;">
+      <div>
+        <div style="font-size:11px;color:var(--text3);">Selected Day</div>
+        <div style="font-size:14px;font-weight:600;">${formatDate(dk)}</div>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="openEditDay('${dk}')">Edit</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px;padding:12px;background:var(--bg3);border-radius:var(--radius);">
+      <div style="text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:${heatColor(avg)};">${avg.toFixed(1)}</div>
+        <div style="font-size:11px;color:var(--text3);">Life Score</div>
+      </div>
+      ${dom ? `
+      <div style="text-align:center;">
+        <div style="font-size:22px;">${dom.icon}</div>
+        <div style="font-size:11px;color:var(--text3);">Dominant</div>
+        <div style="font-size:12px;font-weight:600;color:${dom.color};">${dom.name}</div>
+      </div>` : ''}
+    </div>
+    <div>
+      ${state.dimensions.filter(d => entry.ratings?.[d.id]).map(d => `
+        <div class="detail-rating-row">
+          <div style="display:flex;align-items:center;gap:7px;">
+            <span>${d.icon}</span>
+            <span style="font-size:13px;">${d.name}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <div style="display:flex;gap:2px;">
+              ${[1,2,3,4,5].map(i=>`<div style="width:8px;height:8px;border-radius:50%;background:${i<=(entry.ratings[d.id]||0)?d.color:'var(--bg4)'}"></div>`).join('')}
+            </div>
+            <span style="font-size:13px;font-weight:600;color:${d.color};">${entry.ratings[d.id]}/5</span>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    ${entry.note ? `
+    <div style="margin-top:14px;padding:12px;background:var(--bg3);border-radius:var(--radius);border-left:3px solid var(--accent);">
+      <div style="font-size:11px;color:var(--text3);margin-bottom:4px;font-weight:600;">NOTE</div>
+      <div style="font-size:13px;color:var(--text);">${entry.note}</div>
+    </div>` : ''}
+  `;
+}
+
+function renderAnalytics() {
+  const topEl = document.getElementById('analyticsTop');
+  const rankEl = document.getElementById('dimRankings');
+  const tbEl = document.getElementById('topBottomDays');
+  if (!topEl) return;
+
+  const entries = Object.entries(state.entries).sort(([a],[b])=>a.localeCompare(b));
+  if (!entries.length) {
+    topEl.innerHTML = '<div class="empty-state" style="grid-column:span 2"><div class="empty-icon">📊</div><div class="empty-title">No data yet</div><div class="empty-desc">Start checking in daily to see analytics</div></div>';
+    return;
+  }
+
+  let bestDay = null, bestScore = 0, worstDay = null, worstScore = 6;
+  entries.forEach(([k, e]) => {
+    const a = avgEntry(e);
+    if (a > bestScore) { bestScore = a; bestDay = k; }
+    if (a > 0 && a < worstScore) { worstScore = a; worstDay = k; }
+  });
+
+  const monthMap = {};
+  entries.forEach(([k, e]) => {
+    const mk = k.slice(0,7);
+    if (!monthMap[mk]) monthMap[mk] = [];
+    const a = avgEntry(e);
+    if (a > 0) monthMap[mk].push(a);
+  });
+  let bestMonth = null, bestMA = 0, worstMonth = null, worstMA = 6;
+  Object.entries(monthMap).forEach(([mk, avgs]) => {
+    if (!avgs.length) return;
+    const ma = avgs.reduce((a,b)=>a+b,0)/avgs.length;
+    if (ma > bestMA) { bestMA = ma; bestMonth = mk; }
+    if (ma < worstMA) { worstMA = ma; worstMonth = mk; }
+  });
+
+  const dimAgg = {};
+  state.dimensions.forEach(d => { dimAgg[d.id] = {sum:0, count:0}; });
+  entries.forEach(([,e]) => {
+    if (!e.ratings) return;
+    Object.entries(e.ratings).forEach(([id,v]) => {
+      if (dimAgg[id] && v>0) { dimAgg[id].sum += v; dimAgg[id].count++; }
+    });
+  });
+  const dimAvgs = state.dimensions.map(d => ({d, avg: dimAgg[d.id].count ? dimAgg[d.id].sum/dimAgg[d.id].count : 0}));
+  const sortedDims = [...dimAvgs].sort((a,b)=>b.avg-a.avg);
+  const highestDim = sortedDims[0];
+  const lowestDim = sortedDims[sortedDims.length-1];
+
+  // Most improved / most neglected: compare first-half vs second-half average per dimension
+  const sortedKeys = entries.map(([k])=>k).sort();
+  const mid = Math.floor(sortedKeys.length/2);
+  const firstHalf = new Set(sortedKeys.slice(0, mid));
+  const secondHalf = new Set(sortedKeys.slice(mid));
+  const half = (keySet) => {
+    const agg = {};
+    state.dimensions.forEach(d => agg[d.id] = {sum:0,count:0});
+    entries.forEach(([k,e]) => {
+      if (!keySet.has(k) || !e.ratings) return;
+      Object.entries(e.ratings).forEach(([id,v]) => {
+        if (agg[id] && v>0) { agg[id].sum+=v; agg[id].count++; }
+      });
+    });
+    return agg;
+  };
+  const firstAgg = half(firstHalf), secondAgg = half(secondHalf);
+  let mostImproved = null, mostImprovedDelta = -Infinity;
+  let mostNeglected = null, mostNeglectedDelta = Infinity;
+  state.dimensions.forEach(d => {
+    const f = firstAgg[d.id], s = secondAgg[d.id];
+    if (!f.count || !s.count) return;
+    const delta = (s.sum/s.count) - (f.sum/f.count);
+    if (delta > mostImprovedDelta) { mostImprovedDelta = delta; mostImproved = d; }
+    if (delta < mostNeglectedDelta) { mostNeglectedDelta = delta; mostNeglected = d; }
+  });
+
+  let longestPosStreak = 0, curP = 0;
+  const keys = entries.map(([k])=>k).sort();
+  keys.forEach((k,i) => {
+    const a = avgEntry(state.entries[k]);
+    if (a >= 3) {
+      curP++;
+      longestPosStreak = Math.max(longestPosStreak, curP);
+    } else curP = 0;
+  });
+
+  const overallAvg = entries.reduce((sum,[,e])=>sum+avgEntry(e),0)/entries.length;
+
+  const fmtMonth = mk => {
+    if (!mk) return '—';
+    const [y,m] = mk.split('-');
+    return `${MONTH_FULL[parseInt(m)-1]} ${y}`;
+  };
+
+  topEl.innerHTML = `
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;">Key Insights</div>
+      <div class="analytics-row"><span class="analytics-label">🏆 Best Day</span><span class="analytics-val">${bestDay ? formatDate(bestDay) : '—'}</span></div>
+      <div class="analytics-row"><span class="analytics-label">📉 Worst Day</span><span class="analytics-val">${worstDay ? formatDate(worstDay) : '—'}</span></div>
+      <div class="analytics-row"><span class="analytics-label">🌟 Best Month</span><span class="analytics-val">${fmtMonth(bestMonth)}</span></div>
+      <div class="analytics-row"><span class="analytics-label">⚠️ Worst Month</span><span class="analytics-val">${fmtMonth(worstMonth)}</span></div>
+      <div class="analytics-row"><span class="analytics-label">🔥 Longest Positive Streak</span><span class="analytics-val">${longestPosStreak} days</span></div>
+      <div class="analytics-row"><span class="analytics-label">📐 Year Score</span><span class="analytics-val">${overallAvg.toFixed(2)}</span></div>
+    </div>
+    <div class="card">
+      <div class="card-title" style="margin-bottom:12px;">Dimension Insights</div>
+      <div class="analytics-row"><span class="analytics-label">⭐ Highest Rated Area</span><span class="analytics-val">${highestDim ? `${highestDim.d.icon} ${highestDim.d.name} (${highestDim.avg.toFixed(1)})` : '—'}</span></div>
+      <div class="analytics-row"><span class="analytics-label">🔻 Lowest Rated Area</span><span class="analytics-val">${lowestDim ? `${lowestDim.d.icon} ${lowestDim.d.name} (${lowestDim.avg.toFixed(1)})` : '—'}</span></div>
+      <div class="analytics-row"><span class="analytics-label">📈 Most Improved Area</span><span class="analytics-val">${mostImproved ? `${mostImproved.icon} ${mostImproved.name}` : '—'}</span></div>
+      <div class="analytics-row"><span class="analytics-label">📉 Most Neglected Area</span><span class="analytics-val">${mostNeglected ? `${mostNeglected.icon} ${mostNeglected.name}` : '—'}</span></div>
+      <div class="analytics-row"><span class="analytics-label">📊 Total Entries</span><span class="analytics-val">${entries.length}</span></div>
+    </div>
+  `;
+
+  if (rankEl) {
+    rankEl.innerHTML = `
+      <div class="bar-chart">
+        ${sortedDims.map(({d,avg},i) => `
+          <div class="bar-row">
+            <div class="bar-label" style="display:flex;align-items:center;gap:4px;">
+              <span style="font-size:11px;color:var(--text3);width:16px;">#${i+1}</span>
+              <span>${d.icon} ${d.name}</span>
+            </div>
+            <div class="bar-track">
+              <div class="bar-fill" style="width:${(avg/5)*100}%;background:${d.color};"></div>
+            </div>
+            <div class="bar-val">${avg ? avg.toFixed(2) : '—'}</div>
+          </div>
+        `).join('')}
+      </div>
+    `;
+  }
+
+  if (tbEl) {
+    const sorted = [...entries].sort(([,a],[,b]) => avgEntry(b) - avgEntry(a));
+    const top10 = sorted.slice(0,10);
+    const bottom10 = sorted.slice(-10).reverse();
+    const dayCard = (title, days) => `
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">${title}</div>
+        ${days.map(([k,e],i) => {
+          const a = avgEntry(e);
+          const dom = dominantDim(e);
+          const d = dom ? getDim(dom) : null;
+          return `
+          <div class="analytics-row" style="cursor:pointer;" onclick="openDay('${k}')">
+            <span style="font-size:11px;color:var(--text3);width:20px;">#${i+1}</span>
+            <span class="analytics-label" style="font-size:12px;">${formatDate(k)}</span>
+            <div style="display:flex;align-items:center;gap:6px;">
+              ${d ? `<span>${d.icon}</span>` : ''}
+              <span class="analytics-val">${a.toFixed(1)}</span>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>
+    `;
+    tbEl.innerHTML = dayCard('🏆 Top 10 Days', top10) + dayCard('⚠️ Bottom 10 Days', bottom10);
+  }
+}
+
+function renderReports() {
+  renderMonthReport();
+  renderYearReport();
+  renderYearPills('yearReportPills', renderYearReport);
+}
+
+function renderMonthReport() {
+  const el = document.getElementById('monthReport');
+  const label = document.getElementById('repMonthLabel');
+  if (!el) return;
+  const { repYear, repMonth } = state.ui;
+  if (label) label.textContent = `${MONTH_FULL[repMonth]} ${repYear}`;
+
+  const monthEntries = Object.entries(state.entries).filter(([k]) => {
+    const d = parseKey(k);
+    return d.getFullYear() === repYear && d.getMonth() === repMonth;
+  });
+
+  if (!monthEntries.length) {
+    el.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">📋</div><div class="empty-title">No data for ${MONTH_FULL[repMonth]} ${repYear}</div></div></div>`;
+    return;
+  }
+
+  const dimSums = {};
+  state.dimensions.forEach(d => dimSums[d.id] = {sum:0,count:0});
+  monthEntries.forEach(([,e]) => {
+    if (!e.ratings) return;
+    Object.entries(e.ratings).forEach(([id,v]) => {
+      if (dimSums[id] && v>0) { dimSums[id].sum+=v; dimSums[id].count++; }
+    });
+  });
+
+  const dimAvgs = state.dimensions.map(d => ({d, avg: dimSums[d.id].count ? dimSums[d.id].sum/dimSums[d.id].count : 0}));
+  const sorted = [...dimAvgs].filter(x=>x.avg>0).sort((a,b)=>b.avg-a.avg);
+  const overallAvg = monthEntries.reduce((sum,[,e])=>sum+avgEntry(e),0)/monthEntries.length;
+
+  const domCount = {};
+  monthEntries.forEach(([,e]) => {
+    const id = dominantDim(e);
+    if (id) domCount[id] = (domCount[id]||0) + 1;
+  });
+  const domId = Object.entries(domCount).sort(([,a],[,b])=>b-a)[0]?.[0];
+  const dom = domId ? getDim(domId) : null;
+
+  el.innerHTML = `
+    <div class="grid-2" style="gap:16px;">
+      <div class="card">
+        <div class="card-header"><span class="card-title">Summary</span></div>
+        <div style="display:flex;gap:20px;margin-bottom:16px;">
+          <div style="text-align:center;">
+            <div style="font-size:28px;font-weight:700;color:var(--accent);">${overallAvg.toFixed(1)}</div>
+            <div style="font-size:11px;color:var(--text3);">Avg Score</div>
+          </div>
+          <div style="text-align:center;">
+            <div style="font-size:28px;font-weight:700;">${monthEntries.length}</div>
+            <div style="font-size:11px;color:var(--text3);">Days Logged</div>
+          </div>
+          ${dom ? `<div style="text-align:center;">
+            <div style="font-size:28px;">${dom.icon}</div>
+            <div style="font-size:11px;color:var(--text3);">Dominant Month</div>
+            <div style="font-size:12px;font-weight:600;color:${dom.color};">${dom.name}</div>
+          </div>` : ''}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">Dimension Rankings</div>
+        <div class="bar-chart">
+          ${sorted.map(({d,avg},i) => `
+            <div class="bar-row">
+              <div class="bar-label">${d.icon} ${d.name}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${(avg/5)*100}%;background:${d.color};"></div></div>
+              <div class="bar-val">${avg.toFixed(1)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderYearReport() {
+  const el = document.getElementById('yearReport');
+  if (!el) return;
+  const year = state.ui.selectedYear;
+  const entries = Object.entries(state.entries).filter(([k])=>k.startsWith(year));
+  if (!entries.length) {
+    el.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-icon">📅</div><div class="empty-title">No data for ${year}</div></div></div>`;
+    return;
+  }
+
+  const overallAvg = entries.reduce((sum,[,e])=>sum+avgEntry(e),0)/entries.length;
+  const monthAvgs = [];
+  for (let m=0;m<12;m++) {
+    const me = entries.filter(([k])=>parseKey(k).getMonth()===m);
+    const a = me.length ? me.reduce((s,[,e])=>s+avgEntry(e),0)/me.length : 0;
+    monthAvgs.push({month:m,avg:a,count:me.length});
+  }
+  const bestM = [...monthAvgs].filter(m=>m.count>0).sort((a,b)=>b.avg-a.avg)[0];
+  const worstM = [...monthAvgs].filter(m=>m.count>0).sort((a,b)=>a.avg-b.avg)[0];
+
+  const dimSums = {};
+  state.dimensions.forEach(d=>dimSums[d.id]={sum:0,count:0});
+  entries.forEach(([,e])=>{
+    if(!e.ratings)return;
+    Object.entries(e.ratings).forEach(([id,v])=>{
+      if(dimSums[id]&&v>0){dimSums[id].sum+=v;dimSums[id].count++;}
+    });
+  });
+  const sortedDims = state.dimensions.map(d=>({d,avg:dimSums[d.id].count?dimSums[d.id].sum/dimSums[d.id].count:0})).sort((a,b)=>b.avg-a.avg);
+  const domCount={};
+  entries.forEach(([,e])=>{const id=dominantDim(e);if(id)domCount[id]=(domCount[id]||0)+1;});
+  const domId = Object.entries(domCount).sort(([,a],[,b])=>b-a)[0]?.[0];
+  const dom = domId ? getDim(domId) : null;
+
+  const sortedEntries = [...entries].sort(([,a],[,b]) => avgEntry(b) - avgEntry(a));
+  const top10 = sortedEntries.slice(0,10);
+  const bottom10 = sortedEntries.slice(-10).reverse();
+  const topBottomList = (title, days) => `
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px;">${title}</div>
+      ${days.map(([k,e],i) => {
+        const a = avgEntry(e);
+        const dom2 = dominantDim(e);
+        const d2 = dom2 ? getDim(dom2) : null;
+        return `<div class="analytics-row" style="cursor:pointer;" onclick="openDay('${k}')">
+          <span style="font-size:11px;color:var(--text3);width:20px;">#${i+1}</span>
+          <span class="analytics-label" style="font-size:12px;">${formatDate(k)}</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            ${d2 ? `<span>${d2.icon}</span>` : ''}
+            <span class="analytics-val">${a.toFixed(1)}</span>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  `;
+
+  el.innerHTML = `
+    <div class="grid-3" style="gap:16px;margin-bottom:16px;">
+      <div class="card card-sm" style="text-align:center;">
+        <div style="font-size:28px;font-weight:700;color:var(--accent);">${overallAvg.toFixed(2)}</div>
+        <div style="font-size:11px;color:var(--text3);">Average Life Score</div>
+      </div>
+      <div class="card card-sm" style="text-align:center;">
+        <div style="font-size:28px;font-weight:700;">${entries.length}</div>
+        <div style="font-size:11px;color:var(--text3);">Days Logged</div>
+      </div>
+      <div class="card card-sm" style="text-align:center;">
+        ${dom ? `<div style="font-size:28px;">${dom.icon}</div><div style="font-size:11px;color:${dom.color};font-weight:600;">${dom.name} — Most Dominant Area</div>` : '<div style="font-size:28px;">—</div>'}
+      </div>
+    </div>
+    <div class="grid-2" style="gap:16px;margin-bottom:16px;">
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">Monthly Breakdown</div>
+        <div class="bar-chart">
+          ${monthAvgs.filter(m=>m.count>0).map(({month,avg,count})=>`
+            <div class="bar-row">
+              <div class="bar-label">${MONTHS[month]}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${(avg/5)*100}%;background:${heatColor(avg)};"></div></div>
+              <div class="bar-val">${avg.toFixed(1)}</div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title" style="margin-bottom:12px;">Dimension Performance</div>
+        <div class="bar-chart">
+          ${sortedDims.filter(x=>x.avg>0).map(({d,avg},i)=>`
+            <div class="bar-row">
+              <div class="bar-label">${d.icon} ${d.name}</div>
+              <div class="bar-track"><div class="bar-fill" style="width:${(avg/5)*100}%;background:${d.color};"></div></div>
+              <div class="bar-val">${avg.toFixed(1)}</div>
+            </div>
+          `).join('')}
+        </div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);font-size:12px;color:var(--text2);">
+          🌟 Strongest Month: <strong>${bestM ? MONTH_FULL[bestM.month]+' ('+bestM.avg.toFixed(1)+')' : '—'}</strong><br>
+          ⚠️ Weakest Month: <strong>${worstM ? MONTH_FULL[worstM.month]+' ('+worstM.avg.toFixed(1)+')' : '—'}</strong>
+        </div>
+      </div>
+    </div>
+    <div class="grid-2" style="gap:16px;">
+      ${topBottomList('🏆 Top 10 Days', top10)}
+      ${topBottomList('⚠️ Bottom 10 Days', bottom10)}
+    </div>
+  `;
+}
+
+function renderSearch() {
+  const input = document.getElementById('searchInput');
+  const results = document.getElementById('searchResults');
+  if (!input || !results) return;
+  const q = input.value.trim().toLowerCase();
+  if (!q) {
+    results.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Search your life data</div><div class="empty-desc">Search notes, dates, or dimension names</div></div>';
+    return;
+  }
+  const matches = [];
+  Object.entries(state.entries).forEach(([k,e]) => {
+    const noteMatch = e.note && e.note.toLowerCase().includes(q);
+    const dateMatch = formatDate(k).toLowerCase().includes(q) || k.includes(q);
+    const dimMatch = state.dimensions.some(d => e.ratings?.[d.id] && d.name.toLowerCase().includes(q));
+    if (noteMatch || dateMatch || dimMatch) {
+      matches.push({k, e, noteMatch, dateMatch});
+    }
+  });
+  matches.sort(([a],[b]) => b.localeCompare(a));
+  if (!matches.length) {
+    results.innerHTML = '<div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">No results</div><div class="empty-desc">Try different keywords</div></div>';
+    return;
+  }
+  results.innerHTML = `<div style="font-size:12px;color:var(--text3);margin-bottom:10px;">${matches.length} result${matches.length===1?'':'s'}</div>` + matches.map(({k,e}) => {
+    const avg = avgEntry(e);
+    const dom = dominantDim(e);
+    const d = dom ? getDim(dom) : null;
+    return `
+      <div class="search-result" onclick="openDay('${k}')">
+        <div class="search-result-date">${formatDate(k)} ${d ? `· ${d.icon} ${d.name}` : ''} · Score: ${avg.toFixed(1)}/5</div>
+        ${e.note ? `<div class="search-result-text">${e.note.slice(0,140)}${e.note.length>140?'...':''}</div>` : ''}
+      </div>
+    `;
+  }).join('');
+}
+
+function renderDimList() {
+  const el = document.getElementById('dimList');
+  if (!el) return;
+  const locked = !isAuthor();
+  el.innerHTML = state.dimensions.map((d,i) => `
+    <div class="dim-item${locked?' locked':''}" draggable="${locked?'false':'true'}" data-id="${d.id}" data-idx="${i}">
+      <span class="dim-drag">${locked?'🔒':'⠿'}</span>
+      <div class="dim-color-dot" style="background:${d.color};"></div>
+      <span style="font-size:16px;">${d.icon}</span>
+      <div class="dim-info">
+        <div class="dim-info-name">${d.name}</div>
+      </div>
+      <div class="dim-item-actions">
+        <button class="btn-icon" onclick="openEditDim('${d.id}')" title="Edit" ${locked?'disabled':''}>✏️</button>
+        <button class="btn-icon" onclick="deleteDim('${d.id}')" title="Delete" style="color:var(--danger);" ${locked?'disabled':''}>🗑</button>
+      </div>
+    </div>
+  `).join('');
+  if (!locked) setupDragSort();
+}
+
+function renderSettings() {
+  renderDimList();
+  document.querySelectorAll('[data-theme]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === state.settings.theme);
+  });
+  document.querySelectorAll('[data-palette]').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.palette === state.settings.palette);
+  });
+  updateAuthorUI();
+}
+
+function renderAll() {
+  const view = state.ui.currentView;
+  if (view === 'dashboard') {
+    renderStats();
+    renderMasterHeatmap();
+    renderDimAverages();
+    renderMonthlyOverview();
+    renderYearPills('yearPills', () => {
+      renderMasterHeatmap();
+      renderDimAverages();
+      renderMonthlyOverview();
+    });
+  } else if (view === 'heatmaps') {
+    renderHeatmaps();
+  } else if (view === 'dna') {
+    renderDNA();
+  } else if (view === 'calendar') {
+    renderCalendar();
+  } else if (view === 'analytics') {
+    renderAnalytics();
+  } else if (view === 'reports') {
+    renderReports();
+  } else if (view === 'search') {
+    renderSearch();
+  } else if (view === 'settings') {
+    renderSettings();
+  }
+}
+
+// ==================== CHECK-IN ====================
+function buildCheckinForm(dk, container) {
+  const entry = state.entries[dk] || { ratings:{}, note:'' };
+  container.innerHTML = `
+    <div class="checkin-progress" id="checkinProgress">
+      ${state.dimensions.map((_,i)=>`<div class="checkin-progress-dot" id="cpd_${i}"></div>`).join('')}
+    </div>
+    <div style="margin-bottom:4px;font-size:12px;color:var(--text3);">How satisfied were you yesterday? Rate each area (1=worst, 5=best)</div>
+    ${state.dimensions.map((d,i) => `
+      <div class="checkin-dim">
+        <div class="dim-icon-name">
+          <span class="dim-icon">${d.icon}</span>
+          <span class="dim-name">${d.name}</span>
+        </div>
+        <div class="star-group" id="stars_${d.id}">
+          ${[1,2,3,4,5].map(v => `
+            <button class="star-btn${(entry.ratings[d.id]||0)>=v?' selected':''}"
+              data-dim="${d.id}" data-val="${v}" style="${(entry.ratings[d.id]||0)>=v?`background:${hexAlpha(d.color,0.85)};border-color:${d.color};color:#fff;`:''}">${v}</button>
+          `).join('')}
+        </div>
+      </div>
+    `).join('')}
+    <div class="form-group" style="margin-top:16px;">
+      <label class="form-label">Note (optional)</label>
+      <textarea class="form-input checkin-note" id="checkinNote" placeholder="How was your day?">${entry.note||''}</textarea>
+    </div>
+  `;
+
+  container.querySelectorAll('.star-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const dimId = btn.dataset.dim;
+      const val = parseInt(btn.dataset.val);
+      const dim = getDim(dimId);
+      const group = document.getElementById(`stars_${dimId}`);
+      group.querySelectorAll('.star-btn').forEach((b,i) => {
+        const active = i < val;
+        b.classList.toggle('selected', active);
+        if (active && dim) {
+          b.style.background = hexAlpha(dim.color, 0.85);
+          b.style.borderColor = dim.color;
+          b.style.color = '#fff';
+        } else {
+          b.style.background = '';
+          b.style.borderColor = '';
+          b.style.color = '';
+        }
+      });
+      const dimIdx = state.dimensions.findIndex(d=>d.id===dimId);
+      const dot = document.getElementById(`cpd_${dimIdx}`);
+      if (dot) dot.classList.add('done');
+    });
+  });
+}
+
+function getCheckinData(container) {
+  const ratings = {};
+  state.dimensions.forEach(d => {
+    const group = document.getElementById(`stars_${d.id}`);
+    if (!group) return;
+    const selected = group.querySelector('.star-btn.selected');
+    if (selected) {
+      const btns = [...group.querySelectorAll('.star-btn.selected')];
+      ratings[d.id] = btns.length ? Math.max(...btns.map(b=>parseInt(b.dataset.val))) : 0;
+    }
+  });
+  const note = document.getElementById('checkinNote')?.value || '';
+  return { ratings, note };
+}
+
+function openCheckin() {
+  const yesterday = new Date();
+  yesterday.setDate(yesterday.getDate()-1);
+  const dk = dateKey(yesterday);
+  openCheckinForDate(dk);
+}
+
+function openCheckinForDate(dk) {
+  const overlay = document.getElementById('checkinOverlay');
+  const body = document.getElementById('checkinBody');
+  const dateEl = document.getElementById('checkinDate');
+  if (!overlay || !body) return;
+  state.editDayDate = dk;
+  dateEl.textContent = `Rating for: ${formatDate(dk)}`;
+  buildCheckinForm(dk, body);
+  overlay.classList.add('open');
+}
+
+function saveCheckin() {
+  const dk = state.editDayDate;
+  if (!dk) return;
+  const body = document.getElementById('checkinBody');
+  const data = getCheckinData(body);
+  if (!Object.keys(data.ratings).length) {
+    toast('Please rate at least one dimension');
+    return;
+  }
+  state.entries[dk] = data;
+  state.settings.lastCheckinDate = todayKey();
+  save();
+  document.getElementById('checkinOverlay').classList.remove('open');
+  toast('✅ Check-in saved!');
+  renderAll();
+}
+
+// ==================== DAY DETAIL PANEL ====================
+function openDay(dk) {
+  const panel = document.getElementById('detailPanel');
+  const dateEl = document.getElementById('detailDate');
+  const titleEl = document.getElementById('detailTitle');
+  const body = document.getElementById('detailBody');
+  const editBtn = document.getElementById('detailEditBtn');
+  if (!panel) return;
+
+  dateEl.textContent = formatDate(dk);
+  const entry = state.entries[dk];
+  const avg = entry ? avgEntry(entry) : 0;
+  const domId = entry ? dominantDim(entry) : null;
+  const dom = domId ? getDim(domId) : null;
+  titleEl.textContent = dom ? `${dom.icon} ${dom.name} Day` : (entry ? 'Day Entry' : 'No Entry');
+
+  editBtn.onclick = () => openEditDay(dk);
+
+  if (!entry) {
+    body.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-icon">📝</div>
+        <div class="empty-title">No entry for this day</div>
+        <button class="btn btn-primary" onclick="openCheckinForDate('${dk}')" style="margin-top:12px;">Add Entry</button>
+      </div>
+    `;
+  } else {
+    body.innerHTML = `
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;padding:14px;background:var(--bg3);border-radius:10px;">
+        <div style="text-align:center;">
+          <div style="font-size:30px;font-weight:700;color:var(--accent);">${avg.toFixed(1)}</div>
+          <div style="font-size:11px;color:var(--text3);">Life Score</div>
+        </div>
+        ${dom ? `
+        <div style="text-align:center;">
+          <div style="font-size:30px;">${dom.icon}</div>
+          <div style="font-size:11px;color:${dom.color};font-weight:600;">${dom.name}</div>
+          <div style="font-size:11px;color:var(--text3);">Dominant</div>
+        </div>` : ''}
+      </div>
+      ${state.dimensions.filter(d=>entry.ratings?.[d.id]>0).map(d => {
+        const v = entry.ratings[d.id];
+        return `
+        <div class="detail-rating-row">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="font-size:16px;">${d.icon}</span>
+            <span style="font-size:13px;font-weight:500;">${d.name}</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <div style="display:flex;gap:2px;">
+              ${[1,2,3,4,5].map(i=>`<div style="width:9px;height:9px;border-radius:50%;background:${i<=v?d.color:'var(--bg4)'}"></div>`).join('')}
+            </div>
+            <span style="font-size:14px;font-weight:700;color:${d.color};">${v}</span>
+          </div>
+        </div>`;
+      }).join('')}
+      ${entry.note ? `
+      <div style="margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--radius);border-left:3px solid var(--accent2);">
+        <div style="font-size:10px;color:var(--text3);font-weight:600;margin-bottom:4px;">NOTE</div>
+        <div style="font-size:13px;">${entry.note}</div>
+      </div>` : ''}
+    `;
+  }
+  panel.classList.add('open');
+}
+
+function closeDetailPanel() {
+  document.getElementById('detailPanel')?.classList.remove('open');
+}
+
+// ==================== EDIT DAY ====================
+function openEditDay(dk) {
+  state.editDayDate = dk;
+  const overlay = document.getElementById('editDayOverlay');
+  const body = document.getElementById('editDayBody');
+  const title = document.getElementById('editDayTitle');
+  if (!overlay || !body) return;
+  title.textContent = `Edit — ${formatDate(dk)}`;
+  buildCheckinForm(dk, body);
+  overlay.classList.add('open');
+}
+
+function saveEditDay() {
+  const dk = state.editDayDate;
+  if (!dk) return;
+  const body = document.getElementById('editDayBody');
+  const data = getCheckinData(body);
+  state.entries[dk] = data;
+  save();
+  document.getElementById('editDayOverlay').classList.remove('open');
+  toast('✅ Entry updated!');
+  closeDetailPanel();
+  renderAll();
+}
+
+// ==================== DIMENSION MODAL (author only) ====================
+const PRESET_ICONS = ['💻','📚','🏃','❤️','😴','📱','🎨','💰','🤝','🧘','🍎','✍️','🎵','🌿','🎯','🔬','🏋️','🎮','🌍','☀️','🌙','🔥','💡','📷','🎭','🧠','🚀','⚡','🏠','🐾','🎪','🎲','🛒','🚴','🏊','🎤','📰','🏡','🌸','🍕'];
+
+function openAddDim() {
+  if (!requireAuthor('Add Dimension')) return;
+  state.editDimId = null;
+  state.editDimData = {name:'', icon: PRESET_ICONS[0], color: COLORS[0]};
+  document.getElementById('dimModalTitle').textContent = 'Add Dimension';
+  document.getElementById('dimNameInput').value = '';
+  buildIconGrid();
+  buildColorGrid();
+  document.getElementById('dimModalOverlay').classList.add('open');
+}
+
+function openEditDim(id) {
+  if (!requireAuthor('Edit Dimension')) return;
+  const dim = getDim(id);
+  if (!dim) return;
+  state.editDimId = id;
+  state.editDimData = {name: dim.name, icon: dim.icon, color: dim.color};
+  document.getElementById('dimModalTitle').textContent = 'Edit Dimension';
+  document.getElementById('dimNameInput').value = dim.name;
+  buildIconGrid();
+  buildColorGrid();
+  document.getElementById('dimModalOverlay').classList.add('open');
+}
+
+function buildIconGrid() {
+  const el = document.getElementById('iconGrid');
+  if (!el) return;
+  el.innerHTML = PRESET_ICONS.map(icon => `
+    <button class="icon-option${icon===state.editDimData.icon?' selected':''}" data-icon="${icon}" title="${icon}">${icon}</button>
+  `).join('');
+  el.querySelectorAll('.icon-option').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.editDimData.icon = btn.dataset.icon;
+      el.querySelectorAll('.icon-option').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+  });
+}
+
+function buildColorGrid() {
+  const el = document.getElementById('colorGrid');
+  if (!el) return;
+  el.innerHTML = COLORS.map(c => `
+    <div class="color-option${c===state.editDimData.color?' selected':''}" data-color="${c}" style="background:${c};" title="${c}"></div>
+  `).join('');
+  el.querySelectorAll('.color-option').forEach(opt => {
+    opt.addEventListener('click', () => {
+      state.editDimData.color = opt.dataset.color;
+      el.querySelectorAll('.color-option').forEach(o=>o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+}
+
+function saveDim() {
+  if (!requireAuthor('Save Dimension')) return;
+  const name = document.getElementById('dimNameInput').value.trim();
+  if (!name) { toast('Please enter a name'); return; }
+  if (state.editDimId) {
+    const idx = state.dimensions.findIndex(d=>d.id===state.editDimId);
+    if (idx>=0) state.dimensions[idx] = {...state.dimensions[idx], name, icon: state.editDimData.icon, color: state.editDimData.color};
+  } else {
+    state.dimensions.push({id: uid(), name, icon: state.editDimData.icon, color: state.editDimData.color});
+  }
+  save();
+  document.getElementById('dimModalOverlay').classList.remove('open');
+  toast(state.editDimId ? '✅ Dimension updated!' : '✅ Dimension added!');
+  renderSettings();
+}
+
+function deleteDim(id) {
+  if (!requireAuthor('Delete Dimension')) return;
+  if (!confirm('Delete this dimension? Ratings for this dimension will be removed from all entries.')) return;
+  state.dimensions = state.dimensions.filter(d=>d.id!==id);
+  Object.values(state.entries).forEach(e => { if (e.ratings) delete e.ratings[id]; });
+  save();
+  renderSettings();
+  toast('🗑️ Dimension deleted');
+}
+
+// ==================== DRAG SORT (author only) ====================
+function setupDragSort() {
+  const el = document.getElementById('dimList');
+  if (!el) return;
+  let dragIdx = null;
+  el.querySelectorAll('.dim-item').forEach((item, i) => {
+    item.addEventListener('dragstart', e => {
+      if (!isAuthor()) { e.preventDefault(); return; }
+      dragIdx = i;
+      item.style.opacity = '0.5';
+    });
+    item.addEventListener('dragend', () => { item.style.opacity = ''; });
+    item.addEventListener('dragover', e => { if (!isAuthor()) return; e.preventDefault(); item.style.background = 'var(--bg4)'; });
+    item.addEventListener('dragleave', () => { item.style.background = ''; });
+    item.addEventListener('drop', e => {
+      if (!isAuthor()) return;
+      e.preventDefault();
+      item.style.background = '';
+      if (dragIdx === null || dragIdx === i) return;
+      const arr = [...state.dimensions];
+      const [moved] = arr.splice(dragIdx, 1);
+      arr.splice(i, 0, moved);
+      state.dimensions = arr;
+      save();
+      renderDimList();
+    });
+  });
+}
+
+// ==================== THEME ====================
+function applyTheme(theme) {
+  document.body.className = '';
+  document.body.classList.add(`theme-${theme}`);
+  state.settings.theme = theme;
+  const btn = document.getElementById('themeBtn');
+  if (btn) btn.textContent = theme === 'dark' ? '🌙 Dark' : theme === 'light' ? '☀️ Light' : '⚫ OLED';
+  document.querySelectorAll('[data-theme]').forEach(b => b.classList.toggle('active', b.dataset.theme === theme));
+  save();
+}
+
+// ==================== DATA MANAGEMENT (import/clear are author only) ====================
+function exportData() {
+  const data = {
+    version: 1,
+    exported: new Date().toISOString(),
+    entries: state.entries,
+    dimensions: state.dimensions,
+    settings: state.settings,
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `life-mosaic-${dateKey(new Date())}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast('📤 Data exported!');
+}
+
+function importData() {
+  if (!requireAuthor('Import Data')) return;
+  document.getElementById('importOverlay').classList.add('open');
+}
+
+function confirmImport() {
+  if (!requireAuthor('Import Data')) return;
+  const file = document.getElementById('importFile').files[0];
+  const text = document.getElementById('importText').value.trim();
+  const status = document.getElementById('importStatus');
+  const doImport = raw => {
+    try {
+      const data = JSON.parse(raw);
+      if (data.entries) state.entries = {...state.entries, ...data.entries};
+      if (data.dimensions && data.dimensions.length) state.dimensions = data.dimensions;
+      if (data.settings) state.settings = {...state.settings, ...data.settings};
+      save();
+      document.getElementById('importOverlay').classList.remove('open');
+      toast('✅ Data imported successfully!');
+      renderAll();
+    } catch(e) {
+      status.style.color = 'var(--danger)';
+      status.textContent = 'Invalid JSON: ' + e.message;
+    }
+  };
+  if (file) {
+    const reader = new FileReader();
+    reader.onload = e => doImport(e.target.result);
+    reader.readAsText(file);
+  } else if (text) {
+    doImport(text);
+  } else {
+    status.textContent = 'Please select a file or paste JSON';
+  }
+}
+
+function clearData() {
+  if (!requireAuthor('Clear All Data')) return;
+  if (!confirm('This will delete ALL your data permanently. Are you sure?')) return;
+  if (!confirm('Are you absolutely sure? This cannot be undone.')) return;
+  state.entries = {};
+  state.dimensions = DEFAULT_DIMS.map(d=>({...d}));
+  save();
+  toast('🗑️ All data cleared');
+  renderAll();
+}
+
+// ==================== NAVIGATION ====================
+function switchView(view) {
+  state.ui.currentView = view;
+  document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById(`view-${view}`);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.view === view);
+  });
+  const titles = {
+    dashboard:'Dashboard', heatmaps:'Heatmaps', dna:'Life DNA',
+    calendar:'Calendar', analytics:'Analytics', reports:'Reports',
+    search:'Search', settings:'Settings'
+  };
+  document.getElementById('topbarTitle').textContent = titles[view] || view;
+  renderAll();
+}
+
+// ==================== AUTO CHECKIN ====================
+function checkAutoCheckin() {
+  const today = todayKey();
+  const lastCheckin = state.settings.lastCheckinDate;
+  if (lastCheckin !== today && state.dimensions.length) {
+    setTimeout(() => {
+      if (!document.getElementById('checkinOverlay').classList.contains('open')) {
+        openCheckin();
+      }
+    }, 800);
+  }
+}
+
+// ==================== INIT ====================
+function init() {
+  load();
+  restoreAuthorSession();
+  applyTheme(state.settings.theme);
+
+  // Sidebar collapse
+  const sidebar = document.getElementById('sidebar');
+  const collapseBtn = document.getElementById('collapseBtn');
+  if (state.ui.sidebarCollapsed) sidebar.classList.add('collapsed');
+  collapseBtn.addEventListener('click', () => {
+    state.ui.sidebarCollapsed = !state.ui.sidebarCollapsed;
+    sidebar.classList.toggle('collapsed', state.ui.sidebarCollapsed);
+    collapseBtn.textContent = state.ui.sidebarCollapsed ? '▶' : '◀';
+    save();
+  });
+
+  // Nav items
+  document.querySelectorAll('.nav-item').forEach(btn => {
+    btn.addEventListener('click', () => switchView(btn.dataset.view));
+  });
+
+  // Checkin
+  document.getElementById('checkinBtn').addEventListener('click', openCheckin);
+  document.getElementById('closeCheckin').addEventListener('click', () => {
+    document.getElementById('checkinOverlay').classList.remove('open');
+  });
+  document.getElementById('skipCheckin').addEventListener('click', () => {
+    state.settings.lastCheckinDate = todayKey();
+    save();
+    document.getElementById('checkinOverlay').classList.remove('open');
+  });
+  document.getElementById('saveCheckin').addEventListener('click', saveCheckin);
+
+  document.getElementById('checkinOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('checkinOverlay').classList.remove('open');
+  });
+
+  // Detail panel
+  document.getElementById('closeDetail').addEventListener('click', closeDetailPanel);
+
+  // Edit day modal
+  document.getElementById('closeEditDay').addEventListener('click', () => {
+    document.getElementById('editDayOverlay').classList.remove('open');
+  });
+  document.getElementById('cancelEditDay').addEventListener('click', () => {
+    document.getElementById('editDayOverlay').classList.remove('open');
+  });
+  document.getElementById('saveEditDay').addEventListener('click', saveEditDay);
+  document.getElementById('editDayOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('editDayOverlay').classList.remove('open');
+  });
+
+  // Dim modal
+  document.getElementById('addDimBtn').addEventListener('click', openAddDim);
+  document.getElementById('closeDimModal').addEventListener('click', () => {
+    document.getElementById('dimModalOverlay').classList.remove('open');
+  });
+  document.getElementById('cancelDimModal').addEventListener('click', () => {
+    document.getElementById('dimModalOverlay').classList.remove('open');
+  });
+  document.getElementById('saveDimModal').addEventListener('click', saveDim);
+  document.getElementById('dimModalOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('dimModalOverlay').classList.remove('open');
+  });
+
+  // Theme tabs
+  document.querySelectorAll('[data-theme]').forEach(btn => {
+    btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
+  });
+  document.getElementById('themeBtn').addEventListener('click', () => {
+    const themes = ['dark','light','oled'];
+    const next = themes[(themes.indexOf(state.settings.theme)+1)%themes.length];
+    applyTheme(next);
+  });
+
+  // Palette tabs
+  document.querySelectorAll('[data-palette]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      state.settings.palette = btn.dataset.palette;
+      document.querySelectorAll('[data-palette]').forEach(b => b.classList.toggle('active', b.dataset.palette === state.settings.palette));
+      save();
+      if (state.ui.currentView === 'dashboard') { renderMasterHeatmap(); }
+      else if (state.ui.currentView === 'heatmaps') { renderHeatmaps(); }
+    });
+  });
+
+  // Calendar navigation
+  document.getElementById('calPrev').addEventListener('click', () => {
+    state.ui.calMonth--;
+    if (state.ui.calMonth < 0) { state.ui.calMonth = 11; state.ui.calYear--; }
+    renderCalendar();
+  });
+  document.getElementById('calNext').addEventListener('click', () => {
+    state.ui.calMonth++;
+    if (state.ui.calMonth > 11) { state.ui.calMonth = 0; state.ui.calYear++; }
+    renderCalendar();
+  });
+  document.getElementById('calToday').addEventListener('click', () => {
+    const now = new Date();
+    state.ui.calYear = now.getFullYear();
+    state.ui.calMonth = now.getMonth();
+    renderCalendar();
+  });
+
+  // Report navigation
+  document.getElementById('repPrev').addEventListener('click', () => {
+    state.ui.repMonth--;
+    if (state.ui.repMonth < 0) { state.ui.repMonth = 11; state.ui.repYear--; }
+    renderMonthReport();
+  });
+  document.getElementById('repNext').addEventListener('click', () => {
+    state.ui.repMonth++;
+    if (state.ui.repMonth > 11) { state.ui.repMonth = 0; state.ui.repYear++; }
+    renderMonthReport();
+  });
+
+  // Search
+  document.getElementById('searchInput').addEventListener('input', renderSearch);
+
+  // Export / Import / Clear
+  document.getElementById('exportBtn').addEventListener('click', exportData);
+  document.getElementById('importBtn').addEventListener('click', importData);
+  document.getElementById('clearDataBtn').addEventListener('click', clearData);
+  document.getElementById('closeImport').addEventListener('click', () => {
+    document.getElementById('importOverlay').classList.remove('open');
+  });
+  document.getElementById('cancelImport').addEventListener('click', () => {
+    document.getElementById('importOverlay').classList.remove('open');
+  });
+  document.getElementById('confirmImport').addEventListener('click', confirmImport);
+
+  // Import zone
+  const zone = document.getElementById('importZone');
+  const fileInput = document.getElementById('importFile');
+  zone.addEventListener('click', () => fileInput.click());
+  zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag'));
+  zone.addEventListener('drop', e => {
+    e.preventDefault();
+    zone.classList.remove('drag');
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      fileInput.files = e.dataTransfer.files;
+      document.getElementById('importStatus').textContent = `Selected: ${file.name}`;
+      document.getElementById('importStatus').style.color = 'var(--accent)';
+    }
+  });
+  fileInput.addEventListener('change', () => {
+    if (fileInput.files[0]) {
+      document.getElementById('importStatus').textContent = `Selected: ${fileInput.files[0].name}`;
+      document.getElementById('importStatus').style.color = 'var(--accent)';
+    }
+  });
+
+  // Author login modal
+  document.getElementById('authorModeBadge').addEventListener('click', () => {
+    if (confirm('Sign out of Author Mode?')) authorLogout();
+  });
+  document.getElementById('viewerModeBadge').addEventListener('click', openAuthorLogin);
+  document.getElementById('sidebarAuthorLink').addEventListener('click', () => {
+    isAuthor() ? (confirm('Sign out of Author Mode?') && authorLogout()) : openAuthorLogin();
+  });
+  const settingsAuthorLink = document.getElementById('settingsAuthorLink');
+  if (settingsAuthorLink) settingsAuthorLink.addEventListener('click', openAuthorLogin);
+  document.getElementById('closeAuthorLogin').addEventListener('click', () => {
+    document.getElementById('authorLoginOverlay').classList.remove('open');
+  });
+  document.getElementById('cancelAuthorLogin').addEventListener('click', () => {
+    document.getElementById('authorLoginOverlay').classList.remove('open');
+  });
+  const doAuthorLogin = () => {
+    const val = document.getElementById('authorPasswordInput').value;
+    if (tryAuthorLogin(val)) {
+      document.getElementById('authorLoginOverlay').classList.remove('open');
+      renderAll();
+    } else {
+      document.getElementById('authorLoginError').textContent = 'Incorrect password.';
+    }
+  };
+  document.getElementById('confirmAuthorLogin').addEventListener('click', doAuthorLogin);
+  document.getElementById('authorPasswordInput').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doAuthorLogin();
+  });
+  document.getElementById('authorLoginOverlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) document.getElementById('authorLoginOverlay').classList.remove('open');
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') {
+      document.querySelectorAll('.modal-overlay.open').forEach(o => o.classList.remove('open'));
+      closeDetailPanel();
+    }
+  });
+
+  // Initialize dashboard year
+  state.ui.selectedYear = new Date().getFullYear();
+
+  document.querySelectorAll('[data-palette]').forEach(b => {
+    b.classList.toggle('active', b.dataset.palette === state.settings.palette);
+  });
+
+  // Initial render
+  switchView('dashboard');
+  updateAuthorUI();
+
+  // Auto checkin prompt
+  checkAutoCheckin();
+
+  // Seed demo data if empty
+  if (!Object.keys(state.entries).length) {
+    seedDemoData();
+  }
+}
+
+// ==================== DEMO DATA ====================
+function seedDemoData() {
+  const now = new Date();
+  for (let i = 120; i >= 1; i--) {
+    const d = new Date(now);
+    d.setDate(d.getDate() - i);
+    if (Math.random() > 0.15) {
+      const ratings = {};
+      state.dimensions.forEach(dim => {
+        if (Math.random() > 0.1) {
+          ratings[dim.id] = Math.floor(Math.random() * 5) + 1;
+        }
+      });
+      const dk = dateKey(d);
+      state.entries[dk] = {
+        ratings,
+        note: Math.random() > 0.7 ? ['Great day overall!', 'Feeling productive', 'Needed more rest', 'Made progress on goals', 'Social connections recharged me', 'Focused work session', ''][Math.floor(Math.random()*7)] : ''
+      };
+    }
+  }
+  save();
+  renderAll();
+}
+
+// ==================== MAKE GLOBAL ====================
+window.openDay = openDay;
+window.openEditDay = openEditDay;
+window.openCheckinForDate = openCheckinForDate;
+window.openEditDim = openEditDim;
+window.deleteDim = deleteDim;
+
+// ==================== START ====================
+document.addEventListener('DOMContentLoaded', init);
+</script>
+</body>
+</html>
